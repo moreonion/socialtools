@@ -1,0 +1,45 @@
+{
+  "name": "mo-socialtools",
+  "version": "0.0.1",
+  "author": "Alex Berger <alex@more-onion.com>",
+  "license": "MIT",
+  "description": "A collection of social proof tools.",
+  "keywords": [
+    "social proof"
+  ],
+  "main": "dist/socialtools.js",
+  "files": [
+    "dist/socialtools.js",
+    "dist/socialtools.min.js",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moreonion/socialtools.git"
+  },
+  "bugs": "https://github.com/moreonion/socialtools/issues",
+  "homepage": "https://github.com/moreonion/socialtools",
+  "scripts": {
+    "watch-browserify": "watchify ./src/*.js -o ./dist/bundle.js -dv",
+    "watch": "npm run watch-browserify",
+    "build-browserify": "browserify ./src/*.js > ./dist/bundle.js",
+    "build-js": "gulp js",
+    "build": "npm run build-js",
+    "lint": "eslint ./src/** test/**.js",
+    "doc": "jsdoc -r ./src/ -c ./.jsdoc.conf.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "es6-promise": "^3.0.2",
+    "eslint": "^1.3.1",
+    "gulp": "^3.9.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.1",
+    "jsdoc": "^3.4.0",
+    "lodash": "^3.10.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.1"
+  }
+}
