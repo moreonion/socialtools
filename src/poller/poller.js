@@ -179,7 +179,7 @@ Poller.prototype._poll = function (url) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
         if ('console' in window) {
-            console.log('Error: ' + error.message);
+            console.log('Error: ' + error.message); // eslint-disable-line no-console
         }
     });
 };
