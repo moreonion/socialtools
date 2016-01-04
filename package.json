@@ -27,7 +27,7 @@
     "build": "npm run build-js",
     "mocha": "mocha",
     "test": "istanbul cover _mocha",
-    "lint": "eslint ./src/** test/**.js",
+    "lint": "eslint ./src/{,**/}*.js ./test/{,**/}*.js",
     "doc": "jsdoc -r ./src/ -c ./.jsdoc.conf.json"
   },
   "dependencies": {},
