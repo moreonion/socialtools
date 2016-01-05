@@ -15,35 +15,7 @@ var extend = require('lodash/object/extend');
 /** Promise polyfill */
 require('es6-promise').polyfill();
 
-/**
- * A null adapter function for the XHR response.
- *
- * The null adapter returns nothing, i.e. <code>null</code>.
- * Not sure about use cases.
- *
- * @constructor
- * @this {Poller}
- * @returns {null}
- */
-function NullAdapterFn() {
-    return null;
-}
-
-/**
- * The default adapter function for the XHR response.
- *
- * The default adapter simply returns the response as-is.
- * No transformation is done.
- *
- * @constructor
- * @this {Poller}
- * @param {object} response - The response object
- * @returns {object}
- * @todo Write tutorial
- */
-function DefaultAdapterFn(response) {
-    return response;
-}
+var DefaultAdapterFn = require('./adapter/default');
 
 /**
  * Creates a Poller instance.
