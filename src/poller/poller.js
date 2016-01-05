@@ -24,23 +24,44 @@ var DefaultAdapterFn = require('./adapter/default');
  * @this {Poller}
  * @param {object} options - the options
  * @param {string} options.url - the URL to poll
- * @param {number} [options.pollInterval=10000] - the time between polls in milliseconds
- * @param {function} [options.adapter=DefaultAdapterFn] - the function which adapts the response
- * @param {function} [options.handler] - a handler which will get called with every successful poll
+ * @param {number} [options.pollInterval=10000] - the time between polls in
+ *     milliseconds
+ * @param {function} [options.adapter=DefaultAdapterFn] - the function which
+ *     adapts the response
+ * @param {function} [options.handler] - a handler which will get called with
+ *     every successful poll
  * @public
  */
 function Poller(options) {
     // make it possible to use `Poller()` and `new Poller`
     if (!(this instanceof Poller)) return new Poller(options);
 
+    /**
+     * The default settings.
+     * @var {object}
+     * @inner
+     */
     var defaults = {
         url: null,
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
         handler: null
     };
+
+    /**
+     * The active settings.
+     * @member {object} settings
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
     this.settings = extend(defaults, options);
 
+    /**
+     * The interval of the poller instance.
+     * @member {object} interval
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
     this.interval = null;
 }
 
