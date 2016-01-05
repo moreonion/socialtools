@@ -1,4 +1,6 @@
 node_modules/
 coverage/
+doc/
 *.swp
 .*~
+**/npm-debug.log
