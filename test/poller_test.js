@@ -1,6 +1,7 @@
 /* global require describe it beforeEach afterEach */
 
-var assert = require('assert');
+var chai = require('chai');
+var assert = chai.assert;
 var sinon = require('sinon');
 var Poller = require('../src/poller/poller');
 
