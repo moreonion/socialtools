@@ -1,6 +1,7 @@
 /* global require describe it */
 
-var assert = require('assert');
+var chai = require('chai');
+var assert = chai.assert;
 var DefaultAdapterFn = require('../src/poller/adapter/default');
 var NullAdapterFn = require('../src/poller/adapter/null');
 
