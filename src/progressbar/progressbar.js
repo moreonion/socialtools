@@ -19,6 +19,8 @@ var Poller = require('../poller/poller');
  * @constructor
  * @this {Progressbar}
  * @param {object} [options] - the options
+ * @param {HTMLElement|string} [options.el] - the DOM Element or an
+ *     querySelector representing it
  * @param {Array} [options.targets=[ 100, 1000, 10000 ]] - the targets
  * @param {number} [options.minDelta=0] - the threshhold when the next target should
  *     be used
@@ -37,6 +39,7 @@ var Poller = require('../poller/poller');
  *
  *     For options see the
  *     [constructor options of Poller]{@link module:poller/poller~Poller}.
+ * @todo <code>el</code> can be a collection
  * @todo validation of given options
  * @public
  */
@@ -52,7 +55,8 @@ function Progressbar(options) {
     var defaults = {
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
-        poller: null
+        poller: null,
+        el: null
     };
 
     /**
@@ -86,8 +90,54 @@ function Progressbar(options) {
     } else {
         this.poller = null;
     }
+
+    /**
+     * The bound HTMLElement.
+     * @member {HTMLElement} el
+     * @instance
+     * @memberof module:progressbar/progressbar~Progressbar
+     */
+    this.el = null;
+
+    if (this.settings.el) {
+        this.bindTo(this.settings.el);
+    }
 }
 
+
+/**
+ * Bind to an element container.
+ *
+ * Return <code>true</code> if the element was found and bound, returns
+ * <code>false</code> in case of errors.
+ *
+ * @method
+ * @param {HTMLElement|string} el - the DOM Element or an
+ *     querySelector representing it
+ * @param {Document|DocumentFragment} [document=window.document] - the Document
+ *     or DocumentFragment to operate on.
+ * @todo HTMLCollection
+ * @returns {boolean}
+ */
+Progressbar.prototype.bindTo = function (el, doc) {
+    // default document
+    if (typeof doc === 'undefined') {
+        doc = window.document;
+    }
+
+    if (typeof el === 'string') {
+        this.el = doc.querySelector(el);
+    }
+    if (el instanceof HTMLElement) {
+        this.el = el;
+    }
+
+    if (this.el) {
+        return true;
+    } else {
+        return false;
+    }
+};
 
 /**
  * Get the current target.
