@@ -56,6 +56,7 @@ function Progressbar(options) {
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
         poller: null,
+        counterClass: 'counter',
         el: null
     };
 
@@ -137,6 +138,17 @@ Progressbar.prototype.bindTo = function (el, doc) {
     } else {
         return false;
     }
+};
+
+/**
+ * Trigger an update of the progressbar widget.
+ *
+ * @method
+ * @param {number} count - the target count to update to.
+ * @todo update possible multiple counters inside the container
+ */
+Progressbar.prototype.update = function (count) {
+    this.el.querySelector('.' + this.settings.counterClass).textContent = count;
 };
 
 /**

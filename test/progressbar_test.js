@@ -137,6 +137,23 @@ describe('Progressbar', function () {
             assert.equal(el, progressbar.el);
         });
     });
+
+    describe('updating of container', function () {
+        jsdom();
+
+        beforeEach(function () {
+            this.container = document.createElement('div');
+            this.container.innerHTML = '<div><div class="counter">0</div></div>';
+        });
+
+        it('should update a container counter', function () {
+            var progressbar = new Progressbar();
+            assert.equal('0', this.container.querySelector('.counter').innerHTML);
+            progressbar.bindTo(this.container);
+            progressbar.update(12);
+            assert.equal('12', this.container.querySelector('.counter').innerHTML);
+        });
+    });
 });
 
 // vim: set et ts=4 sw=4 :
