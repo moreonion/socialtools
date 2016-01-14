@@ -20,9 +20,9 @@
   "bugs": "https://github.com/moreonion/socialtools/issues",
   "homepage": "https://github.com/moreonion/socialtools",
   "scripts": {
-    "watch-browserify": "watchify ./src/*.js -o ./dist/bundle.js -dv",
+    "watch-browserify": "watchify ./src/main.js -o ./dist/bundle.js -dv",
     "watch": "npm run watch-browserify",
-    "build-browserify": "browserify ./src/*.js > ./dist/bundle.js",
+    "build-browserify": "browserify ./src/main.js > ./dist/bundle.js",
     "build-js": "gulp js",
     "build": "npm run build-js",
     "mocha": "mocha",
