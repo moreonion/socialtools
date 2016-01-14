@@ -18,23 +18,25 @@ var Poller = require('../poller/poller');
  *
  * @constructor
  * @this {Progressbar}
- * @param {object} options - the options
- * @param {Array} [targets=[ 100, 1000, 10000 ]] - the targets
- * @param {number} [minDelta=0] - the threshhold when the next target should be used
- * @param {object|Poller} [options.poller] - The poller to use or the options for
- *     the poller. If the the value is of instance <code>Poller</code> it is used
- *     as-is; otherwise if it's a plain dictionary it is used as config object for
- *     the Poller instance which will get created.
+ * @param {object} [options] - the options
+ * @param {Array} [options.targets=[ 100, 1000, 10000 ]] - the targets
+ * @param {number} [options.minDelta=0] - the threshhold when the next target should
+ *     be used
+ * @param {null|object|Poller} [options.poller] - The poller to use or the
+ *     options for the poller. If the the value is of instance
+ *     <code>Poller</code> it is used as-is; otherwise if it's a plain
+ *     dictionary it is used as config object for the Poller instance which
+ *     will get created.
+ *
+ *     If poller is not set or set to <code>null</code> no poller is associated
+ *     with this progressbar and no binding of events or callbacks will be
+ *     done.
  *
  *     If no poller is defined or this is set to <code>null</code>, no polling
  *     will occur.
- * @param {string} options.poller.url - the URL to poll
- * @param {number} [options.poller.pollInterval=10000] - the time between polls
- *     in milliseconds
- * @param {function} [options.poller.adapter=DefaultAdapterFn] - the function
- *     which adapts the response
- * @param {function} [options.poller.handler] - a handler which will get called
- *     with every successful poll
+ *
+ *     For options see the
+ *     [constructor options of Poller]{@link module:poller/poller~Poller}.
  * @todo validation of given options
  * @public
  */
@@ -68,6 +70,22 @@ function Progressbar(options) {
      * @memberof module:progressbar/progressbar~Progressbar
      */
     this.currentCount = 0;
+
+    /**
+     * The used poller.
+     * @member {Poller} poller
+     * @instance
+     * @memberof module:progressbar/progressbar~Progressbar
+     */
+    this.poller = null;
+
+    if (typeof this.settings.poller === 'object' && this.settings.poller instanceof Poller) {
+        this.poller = this.settings.poller;
+    } else if (typeof this.settings.poller === 'object' && this.settings.poller !== null) {
+        this.poller = new Poller(this.settings.poller);
+    } else {
+        this.poller = null;
+    }
 }
 
 
