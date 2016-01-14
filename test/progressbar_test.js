@@ -1,9 +1,11 @@
-/* global require describe it beforeEach */
+/* global require describe it beforeEach global */
 
 var chai = require('chai');
 var assert = chai.assert;
 var Progressbar = require('../src/progressbar/progressbar');
 var Poller = require('../src/poller/poller');
+
+var jsdom = require('mocha-jsdom');
 
 describe('Progressbar', function () {
     describe('constructor', function () {
@@ -11,6 +13,7 @@ describe('Progressbar', function () {
             var progressbar = new Progressbar();
             assert.ok(progressbar instanceof Progressbar);
         });
+
         it('should be constructable without new', function () {
             var progressbar = Progressbar(); // eslint-disable-line new-cap
             assert.ok(progressbar instanceof Progressbar);
@@ -22,15 +25,18 @@ describe('Progressbar', function () {
             var progressbar = new Progressbar();
             assert.ok(progressbar.poller === null);
         });
+
         it('should be optional by setting `poller` to `null`', function () {
             var progressbar = new Progressbar({ poller: null});
             assert.ok(progressbar.poller === null);
         });
+
         it('should be settable to a already created Poller', function () {
             var myPoller = new Poller();
             var progressbar = new Progressbar({ poller: myPoller});
             assert.equal(myPoller, progressbar.poller);
         });
+
         it('should create a new Poller if given poller options', function () {
             var progressbar = new Progressbar({ poller: {url: 'http://example.com'}});
             // a little brittle to test it this way, but the Poller constructor
@@ -88,6 +94,47 @@ describe('Progressbar', function () {
                 targets: []
             });
             assert.equal(0, progressbar.currentTarget());
+        });
+    });
+
+    describe('binding of element', function () {
+        jsdom();
+
+        beforeEach(function () {
+            this.progressbar = new Progressbar();
+            this.container = document.createElement('div');
+            this.container.innerHTML = '<div id="container"></div>';
+        });
+
+        it('should return `true` if successful', function () {
+            var returnValue = this.progressbar.bindTo(this.container);
+            assert.equal(true, returnValue);
+        });
+
+        it('should return `false` if failed', function () {
+            var returnValue = this.progressbar.bindTo('#non-existing', global.document);
+            assert.equal(false, returnValue);
+        });
+
+        it('can bind to any given HTMLElement', function () {
+            var el = global.document.createElement('div');
+            var returnValue = this.progressbar.bindTo(el);
+            assert.equal(true, returnValue);
+            assert.equal(el, this.progressbar.el);
+        });
+
+        it('can bind to an HTML id', function () {
+            var fragment = document.createDocumentFragment();
+            fragment.appendChild(this.container);
+            var returnValue = this.progressbar.bindTo('#container', fragment);
+            assert.equal('DIV', this.progressbar.el.nodeName);
+            assert.equal(true, returnValue);
+        });
+
+        it('can bind via an option of the constructor', function () {
+            var el = global.document.createElement('div');
+            var progressbar = new Progressbar({ el: el });
+            assert.equal(el, progressbar.el);
         });
     });
 });
