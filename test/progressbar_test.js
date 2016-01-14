@@ -3,6 +3,7 @@
 var chai = require('chai');
 var assert = chai.assert;
 var Progressbar = require('../src/progressbar/progressbar');
+var Poller = require('../src/poller/poller');
 
 describe('Progressbar', function () {
     describe('constructor', function () {
@@ -13,6 +14,30 @@ describe('Progressbar', function () {
         it('should be constructable without new', function () {
             var progressbar = Progressbar(); // eslint-disable-line new-cap
             assert.ok(progressbar instanceof Progressbar);
+        });
+    });
+
+    describe('usage of Poller', function () {
+        it('should be optional', function () {
+            var progressbar = new Progressbar();
+            assert.ok(progressbar.poller === null);
+        });
+        it('should be optional by setting `poller` to `null`', function () {
+            var progressbar = new Progressbar({ poller: null});
+            assert.ok(progressbar.poller === null);
+        });
+        it('should be settable to a already created Poller', function () {
+            var myPoller = new Poller();
+            var progressbar = new Progressbar({ poller: myPoller});
+            assert.equal(myPoller, progressbar.poller);
+        });
+        it('should create a new Poller if given poller options', function () {
+            var progressbar = new Progressbar({ poller: {url: 'http://example.com'}});
+            // a little brittle to test it this way, but the Poller constructor
+            // here is not the same which was used to construct
+            // progressbar.poller, which is not accessible here (internal to
+            // poller)
+            assert.equal('Poller', progressbar.poller.constructor.name);
         });
     });
 
