@@ -22,7 +22,8 @@ var Poller = require('../poller/poller');
  * @param {object} [options] - the options
  * @param {HTMLElement|string} [options.el] - the DOM Element or an
  *     querySelector representing it
- * @param {Array} [options.targets=[ 100, 1000, 10000 ]] - the targets
+ * @param {Array} [options.targets=[ 100, 1000, 10000 ]] - the targets (only
+ *     positive numbers)
  * @param {number} [options.minDelta=0] - the threshhold when the next target should
  *     be used
  * @param {null|object|Poller} [options.poller] - The poller to use or the
@@ -179,6 +180,39 @@ Progressbar.prototype.render = function () {
     if (this.el) {
         this.el.querySelector('.' + this.settings.counterClass).textContent = this.currentCount;
     }
+};
+
+/**
+ * Get the achievement in percentage.
+ *
+ * Returns a float, rounded to 2 decimal places and calculated with the current
+ * target. Returns 100.00 at maximum.
+ *
+ * The return value can be negative if the currentCount happens to be negative.
+ *
+ * Does nothing if no element is bound.
+ *
+ * @param {boolean} [ceil=true] - should the result ceiled with 100 (percent)
+ * @returns {float}
+ * @method
+ */
+Progressbar.prototype.percentageDone = function (ceil) {
+    if (typeof ceil === 'undefined') {
+        ceil = true;
+    }
+
+    var target = utils.toInteger(this.currentTarget());
+    if (target === 0 || target < 0) {
+        return 0.00;
+    }
+
+    var achievement = this.currentCount / target;
+    if (ceil && achievement > 1.00) {
+        return 100.00;
+    }
+
+    // calculate from a 0.abcdef fraction to an ab.cd value
+    return (Math.round(achievement * 100 * 100)) / 100;
 };
 
 /**
