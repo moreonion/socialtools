@@ -124,6 +124,20 @@ describe('Progressbar', function () {
             this.progressbar.update(555);
             assert.equal(71.43, this.progressbar.percentageDone());
         });
+
+        it('returns 0 if targets is 0', function () {
+            var progressbar = new Progressbar({
+                targets: [ 0 ]
+            });
+            assert.equal(0, progressbar.percentageDone());
+        });
+
+        it('returns 0 if targets is below 0', function () {
+            var progressbar = new Progressbar({
+                targets: [ -10 ]
+            });
+            assert.equal(0, progressbar.percentageDone());
+        });
     });
 
     describe('calculation of missing count', function () {
