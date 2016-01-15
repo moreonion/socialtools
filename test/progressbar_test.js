@@ -138,6 +138,26 @@ describe('Progressbar', function () {
         });
     });
 
+    describe('updating of store', function () {
+        beforeEach(function () {
+            this.progressbar = new Progressbar();
+        });
+
+        it('returns true if the count changed', function () {
+            assert.equal(0, this.progressbar.currentCount);
+            var returnValue = this.progressbar.update(12);
+            assert.equal(true, returnValue);
+        });
+
+        it('returns false if the count did not change', function () {
+            assert.equal(0, this.progressbar.currentCount);
+            var returnValue = this.progressbar.update(12);
+            assert.equal(true, returnValue);
+            returnValue = this.progressbar.update(12);
+            assert.equal(false, returnValue);
+        });
+    });
+
     describe('updating of container', function () {
         jsdom();
 
