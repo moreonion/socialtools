@@ -233,17 +233,52 @@ describe('Progressbar', function () {
     describe('updating of container', function () {
         jsdom();
 
-        beforeEach(function () {
-            this.container = document.createElement('div');
-            this.container.innerHTML = '<div><div class="counter">0</div></div>';
+        it('should update a container counter', function () {
+            var container = document.createElement('div');
+            container.innerHTML = '<div><div class="counter">0</div></div>';
+            var progressbar = new Progressbar({
+                targets: [ 100 ],
+                counterSelector: '.counter'
+            });
+            // default value from the markup
+            assert.equal('0', container.querySelector('.counter').innerHTML);
+            progressbar.bindTo(container);
+            progressbar.update(12);
+            assert.equal('12', container.querySelector('.counter').innerHTML);
+            progressbar.update(44);
+            assert.equal('44', container.querySelector('.counter').innerHTML);
         });
 
-        it('should update a container counter', function () {
-            var progressbar = new Progressbar();
-            assert.equal('0', this.container.querySelector('.counter').innerHTML);
-            progressbar.bindTo(this.container);
-            progressbar.update(12);
-            assert.equal('12', this.container.querySelector('.counter').innerHTML);
+        it('should update a container down counter', function () {
+            var container = document.createElement('div');
+            container.innerHTML = '<div><div class="down-counter">100</div></div>';
+            var progressbar = new Progressbar({
+                targets: [ 100 ],
+                downCounterSelector: '.down-counter'
+            });
+            // default value from the markup
+            assert.equal('100', container.querySelector('.down-counter').innerHTML);
+            progressbar.bindTo(container);
+            progressbar.update(23);
+            assert.equal('77', container.querySelector('.down-counter').innerHTML);
+            progressbar.update(56);
+            assert.equal('44', container.querySelector('.down-counter').innerHTML);
+        });
+
+        it('should update a container bar\'s width', function () {
+            var container = document.createElement('div');
+            container.innerHTML = '<div><div class="bar" style="width: 0%;"></div></div>';
+            var progressbar = new Progressbar({
+                targets: [ 100, 777 ],
+                barSelector: '.bar'
+            });
+            // default value from the markup
+            assert.equal('0%', container.querySelector('.bar').style.width);
+            progressbar.bindTo(container);
+            progressbar.update(56);
+            assert.equal('56%', container.querySelector('.bar').style.width);
+            progressbar.update(555);
+            assert.equal('71.43%', container.querySelector('.bar').style.width);
         });
     });
 });
