@@ -11,6 +11,7 @@ module.exports = Progressbar;
 
 var extend = require('lodash/object/extend');
 
+var utils = require('../common/utils');
 var Poller = require('../poller/poller');
 
 /**
@@ -70,6 +71,9 @@ function Progressbar(options) {
 
     /**
      * The current count state. The targets are compared against this value.
+     *
+     * This is our store.
+     *
      * @member {number} currentCount
      * @instance
      * @memberof module:progressbar/progressbar~Progressbar
@@ -143,12 +147,38 @@ Progressbar.prototype.bindTo = function (el, doc) {
 /**
  * Trigger an update of the progressbar widget.
  *
+ * If the store was updated because the count changed, return
+ * <code>true</code>. If the count did not change return <code>false</code>.
+ *
  * @method
- * @param {number} count - the target count to update to.
+ * @param {number|string} count - the target count to update to.
+ * @returns {boolean}
  * @todo update possible multiple counters inside the container
  */
 Progressbar.prototype.update = function (count) {
-    this.el.querySelector('.' + this.settings.counterClass).textContent = count;
+    var newCount = utils.toInteger(count);
+
+    if (newCount !== this.currentCount) {
+        // something has changed
+        this.currentCount = newCount;
+        this.render();
+        return true;
+    } else {
+        return false;
+    }
+};
+
+/**
+ * Render or re-render the bound element.
+ *
+ * Does nothing if no element is bound.
+ *
+ * @method
+ */
+Progressbar.prototype.render = function () {
+    if (this.el) {
+        this.el.querySelector('.' + this.settings.counterClass).textContent = this.currentCount;
+    }
 };
 
 /**
