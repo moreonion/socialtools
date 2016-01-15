@@ -262,4 +262,38 @@ Progressbar.prototype.currentTarget = function () {
     }
 };
 
+/**
+ * Get the missing count.
+ *
+ * Returns the difference between the current count and the current target.
+ * Returns 0 if no targets are defined.
+ *
+ * @method
+ * @param {boolean} [floor=true] - should the result be ceiled with 0, i.e. no
+ *     negative missing count
+ * @returns {number}
+ */
+Progressbar.prototype.getMissingCount = function (floor) {
+    if (typeof floor === 'undefined') {
+        floor = true;
+    }
+
+    // return 0 if no targets are configured
+    if (this.settings.targets.length === 0) {
+        return 0;
+    }
+
+    var target = utils.toInteger(this.currentTarget());
+    if (target === 0 || target < 0) {
+        return 0;
+    }
+
+    var missing = target - this.currentCount;
+    if (floor && missing < 0) {
+        return 0;
+    }
+
+    return missing;
+};
+
 // vim: set et ts=4 sw=4 :

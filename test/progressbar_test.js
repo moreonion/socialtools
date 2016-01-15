@@ -126,6 +126,49 @@ describe('Progressbar', function () {
         });
     });
 
+    describe('calculation of missing count', function () {
+        beforeEach(function () {
+            this.progressbar = new Progressbar({
+                targets: [ 100, 1000 ]
+            });
+        });
+
+        it('should be 100 on start', function () {
+            assert.equal(100, this.progressbar.getMissingCount());
+        });
+
+        it('should be 0 at max', function () {
+            this.progressbar.update(100000);
+            assert.equal(0, this.progressbar.getMissingCount());
+        });
+
+        it('could be without flooring', function () {
+            this.progressbar.update(100000);
+            assert.isAbove(0, this.progressbar.getMissingCount(false));
+        });
+
+        it('returns 0 if no targets are set', function () {
+            var progressbar = new Progressbar({
+                targets: []
+            });
+            assert.equal(0, progressbar.getMissingCount());
+        });
+
+        it('returns 0 if targets is 0', function () {
+            var progressbar = new Progressbar({
+                targets: [ 0 ]
+            });
+            assert.equal(0, progressbar.getMissingCount());
+        });
+
+        it('returns 0 if targets is below 0', function () {
+            var progressbar = new Progressbar({
+                targets: [ -10 ]
+            });
+            assert.equal(0, progressbar.getMissingCount());
+        });
+    });
+
     describe('binding of element', function () {
         jsdom();
 
