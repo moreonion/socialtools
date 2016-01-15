@@ -97,6 +97,35 @@ describe('Progressbar', function () {
         });
     });
 
+    describe('calculation of percentage done', function () {
+        beforeEach(function () {
+            this.progressbar = new Progressbar({
+                targets: [ 100, 777, 1000 ]
+            });
+        });
+
+        it('should be 0 on start', function () {
+            assert.equal(0, this.progressbar.percentageDone());
+        });
+
+        it('should be 100 at max', function () {
+            this.progressbar.update(100000);
+            assert.equal(100, this.progressbar.percentageDone());
+        });
+
+        it('could be without ceiling', function () {
+            this.progressbar.update(100000);
+            assert.isBelow(100, this.progressbar.percentageDone(false));
+        });
+
+        it('rounds to 2 decimal places', function () {
+            this.progressbar.update(553);
+            assert.equal(71.17, this.progressbar.percentageDone());
+            this.progressbar.update(555);
+            assert.equal(71.43, this.progressbar.percentageDone());
+        });
+    });
+
     describe('binding of element', function () {
         jsdom();
 
