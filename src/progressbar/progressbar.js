@@ -45,6 +45,8 @@ var Poller = require('../poller/poller');
  *     selects the growing bar
  * @param {string} [options.counterSelector='.counter'] - the HTML class
  *     selector which selects counters
+ * @param {string} [options.downCounterSelector='.down-counter'] - the HTML
+ *     class selector which selects counters (the remaining count)
  * @todo <code>el</code> can be a collection
  * @todo validation of given options
  * @public
@@ -64,6 +66,7 @@ function Progressbar(options) {
         poller: null,
         barSelector: '.bar',
         counterSelector: '.counter',
+        downCounterSelector: '.down-counter',
         el: null
     };
 
@@ -187,9 +190,15 @@ Progressbar.prototype.render = function () {
         if (bar) {
             bar.style.width = this.percentageDone(true) + '%';
         }
+
         var counter = this.el.querySelector(this.settings.counterSelector);
         if (counter) {
             counter.textContent = this.currentCount;
+        }
+
+        var downCounter = this.el.querySelector(this.settings.downCounterSelector);
+        if (downCounter) {
+            downCounter.textContent = this.getMissingCount();
         }
     }
 };
