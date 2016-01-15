@@ -41,6 +41,10 @@ var Poller = require('../poller/poller');
  *
  *     For options see the
  *     [constructor options of Poller]{@link module:poller/poller~Poller}.
+ * @param {string} [options.barSelector='.bar'] - the HTML class selector which
+ *     selects the growing bar
+ * @param {string} [options.counterSelector='.counter'] - the HTML class
+ *     selector which selects counters
  * @todo <code>el</code> can be a collection
  * @todo validation of given options
  * @public
@@ -58,7 +62,8 @@ function Progressbar(options) {
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
         poller: null,
-        counterClass: 'counter',
+        barSelector: '.bar',
+        counterSelector: '.counter',
         el: null
     };
 
@@ -178,7 +183,14 @@ Progressbar.prototype.update = function (count) {
  */
 Progressbar.prototype.render = function () {
     if (this.el) {
-        this.el.querySelector('.' + this.settings.counterClass).textContent = this.currentCount;
+        var bar = this.el.querySelector(this.settings.barSelector);
+        if (bar) {
+            bar.style.width = this.percentageDone(true) + '%';
+        }
+        var counter = this.el.querySelector(this.settings.counterSelector);
+        if (counter) {
+            counter.textContent = this.currentCount;
+        }
     }
 };
 
