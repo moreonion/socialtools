@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: poller/poller</title>
+    <title>JSDoc: Module: polyfills/element/remove</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: poller/poller</h1>
+    <h1 class="page-title">Module: polyfills/element/remove</h1>
 
     
 
@@ -31,8 +31,6 @@
         
             
         
-            
-        
     
 </header>
 
@@ -40,7 +38,10 @@
     <div class="container-overview">
     
         
-            <div class="description">Poller module.</div>
+            <div class="description">DOM Element.prototype.remove() polyfill
+
+Call with <code>require('./polyfills/element/remove').polyfill();</code>
+from your module.</div>
         
 
         
@@ -89,12 +90,19 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line1">line 1</a>
+        <a href="polyfills_element_remove.js.html">polyfills/element/remove.js</a>, <a href="polyfills_element_remove.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove">https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -116,18 +124,37 @@
 
 
         
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
             
 
     
 
-    <h4 class="name" id="module:poller/poller"><span class="type-signature"></span>module:poller/poller<span class="type-signature"></span></h4>
+    <h4 class="name" id=".remove"><span class="type-signature">(static) </span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Create a poller
+    Removes an element.
 </div>
 
 
@@ -171,7 +198,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line12">line 12</a>
+        <a href="polyfills_element_remove.js.html">polyfills/element/remove.js</a>, <a href="polyfills_element_remove.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -179,6 +206,13 @@
 
     
 
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>window replaceable</li>
+        </ul>
+    </dd>
     
 </dl>
 
@@ -198,36 +232,6 @@
 
 
         
-    
-    </div>
-
-    
-
-    
-        <h3 class="subsection-title">Requires</h3>
-
-        <ul>
-            <li>module:lodash/object/extend</li>
-        
-            <li>module:es6-promise</li>
-        </ul>
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="module-poller_poller-Poller.html">Poller</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-     
-
-    
-
-    
-
     
 
     

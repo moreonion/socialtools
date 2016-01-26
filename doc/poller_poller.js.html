@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: poller.js</title>
+    <title>JSDoc: Source: poller/poller.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: poller.js</h1>
+    <h1 class="page-title">Source: poller/poller.js</h1>
 
     
 
@@ -42,36 +42,12 @@ module.exports = Poller;
 var extend = require('lodash/object/extend');
 /** Promise polyfill */
 require('es6-promise').polyfill();
+/** Element.prototype.remove() polyfill */
+require('../polyfills/element/remove').polyfill();
 
-/**
- * A null adapter function for the XHR response.
- *
- * The null adapter returns nothing, i.e. &lt;code>null&lt;/code>.
- * Not sure about use cases.
- *
- * @constructor
- * @this {Poller}
- * @returns {null}
- */
-function NullAdapterFn() {
-    return null;
-}
+var utils = require('../common/utils');
+var DefaultAdapterFn = require('./adapter/default');
 
-/**
- * The default adapter function for the XHR response.
- *
- * The default adapter simply returns the response as-is.
- * No transformation is done.
- *
- * @constructor
- * @this {Poller}
- * @param {object} response - The response object
- * @returns {object}
- * @todo Write tutorial
- */
-function DefaultAdapterFn(response) {
-    return response;
-}
 
 /**
  * Creates a Poller instance.
@@ -80,23 +56,48 @@ function DefaultAdapterFn(response) {
  * @this {Poller}
  * @param {object} options - the options
  * @param {string} options.url - the URL to poll
- * @param {number} [options.pollInterval=10000] - the time between polls in milliseconds
- * @param {function} [options.adapter=DefaultAdapterFn] - the function which adapts the response
- * @param {function} [options.handler] - a handler which will get called with every successful poll
+ * @param {string} [options.type='json'] - the type of the request, may be
+ *     &lt;code>json&lt;/code> or &lt;code>jsonp&lt;/code>
+ * @param {number} [options.pollInterval=10000] - the time between polls in
+ *     milliseconds
+ * @param {function} [options.adapter=DefaultAdapterFn] - the function which
+ *     adapts the response
+ * @param {function} [options.handler] - a handler which will get called with
+ *     every successful poll
  * @public
+ * @todo validate options, throw Error on invalid options
  */
 function Poller(options) {
     // make it possible to use `Poller()` and `new Poller`
     if (!(this instanceof Poller)) return new Poller(options);
 
+    /**
+     * The default settings.
+     * @var {object}
+     * @inner
+     */
     var defaults = {
         url: null,
+        type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
         handler: null
     };
+
+    /**
+     * The active settings.
+     * @member {object} settings
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
     this.settings = extend(defaults, options);
 
+    /**
+     * The interval of the poller instance.
+     * @member {object} interval
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
     this.interval = null;
 }
 
@@ -157,6 +158,46 @@ Poller.prototype.getJSON = function (url) {
 };
 
 /**
+ * Get an URL via JSONP and parse the result as JSON.
+ *
+ * This method conveniently wraps {@link Poller#get} with a call to
+ * &lt;code>JSON.parse&lt;/code>
+ *
+ * @method
+ * @param {string} url - The URL to get.
+ * @returns {Promise}
+ * @todo possible to inject other document
+ * @todo possible to inject other global scope (window)
+ * @todo more robust callback name in order to avoid collisions
+ * @todo when to reject Promises
+ */
+Poller.prototype.getJSONP = function (url) {
+    var callbackName = 'pollerJSONPCallback';
+    // return empty, i.e. fail silently if we have an collision
+    if (typeof window[callbackName] !== 'undefined') {
+        return new Promise(function (resolve) {
+            resolve({});
+        });
+    } else {
+        return new Promise(function (resolve) {
+            var scriptEl = document.createElement('script');
+            var requestUrl = utils.addQueryParams(url, {
+                callback: callbackName
+            });
+            window[callbackName] = function (data) {
+                // cleans itself when called
+                delete window[callbackName];
+                scriptEl.remove();
+                resolve(data);
+            };
+            scriptEl.setAttribute('src', requestUrl);
+            document.body.appendChild(scriptEl);
+        });
+    }
+
+};
+
+/**
  * Handle the response.
  *
  * Handle the response by emitting an event and calling an optional callback.
@@ -182,6 +223,7 @@ Poller.prototype._handleResponse = function (data) {
      * @param {object} details - the details of the CustomEvent
      * @param {object} details.data - the data of the response from the poll
      * @todo namespace event
+     * @todo attach event to poller instance
      */
     var event = document.createEvent('CustomEvent');
     event.initCustomEvent('polled', true, true, { data: data });
@@ -203,11 +245,18 @@ Poller.prototype._handleResponse = function (data) {
 Poller.prototype._poll = function (url) {
     // transform via JSON.parse resolve callback
     var self = this;
-    this.getJSON(url).then(function (response) {
+    var pollCallbackName;
+    if (this.settings.type === 'json') {
+        pollCallbackName = 'getJSON';
+    } else if (this.settings.type === 'jsonp') {
+        pollCallbackName = 'getJSONP';
+    }
+
+    this[pollCallbackName](url).then(function (response) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
         if ('console' in window) {
-            console.log('Error: ' + error.message);
+            console.log('Error: ' + error.message); // eslint-disable-line no-console
         }
     });
 };
@@ -250,13 +299,13 @@ Poller.prototype.poll = function (action) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-poller_poller.html">poller/poller</a></li></ul><h3>Classes</h3><ul><li><a href="module-poller_poller-DefaultAdapterFn.html">DefaultAdapterFn</a></li><li><a href="module-poller_poller-NullAdapterFn.html">NullAdapterFn</a></li><li><a href="module-poller_poller-Poller.html">Poller</a></li></ul><h3>Events</h3><ul><li><a href="module-poller_poller-Poller.html#event:polled">polled</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-common_countries.html">common/countries</a></li><li><a href="module-common_utils.html">common/utils</a></li><li><a href="module-poller_adapter_default.html">poller/adapter/default</a></li><li><a href="module-poller_adapter_null.html">poller/adapter/null</a></li><li><a href="module-poller_poller.html">poller/poller</a></li><li><a href="module-polyfills_element_remove.html">polyfills/element/remove</a></li><li><a href="module-progressbar_progressbar.html">progressbar/progressbar</a></li></ul><h3>Classes</h3><ul><li><a href="module-poller_adapter_default-DefaultAdapterFn.html">DefaultAdapterFn</a></li><li><a href="module-poller_adapter_null-NullAdapterFn.html">NullAdapterFn</a></li><li><a href="module-poller_poller-Poller.html">Poller</a></li><li><a href="module-progressbar_progressbar-Progressbar.html">Progressbar</a></li></ul><h3>Events</h3><ul><li><a href="module-poller_poller-Poller.html#event:polled">polled</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Jan 03 2016 16:46:24 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jan 26 2016 17:11:09 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

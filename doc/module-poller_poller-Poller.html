@@ -168,6 +168,46 @@
 
         <tr>
             
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'json'
+                
+                </td>
+            
+
+            <td class="description last">the type of the request, may be
+    <code>json</code> or <code>jsonp</code></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>pollInterval</code></td>
             
 
@@ -200,7 +240,8 @@
                 </td>
             
 
-            <td class="description last">the time between polls in milliseconds</td>
+            <td class="description last">the time between polls in
+    milliseconds</td>
         </tr>
 
     
@@ -239,7 +280,8 @@
                 </td>
             
 
-            <td class="description last">the function which adapts the response</td>
+            <td class="description last">the function which
+    adapts the response</td>
         </tr>
 
     
@@ -276,7 +318,8 @@
                 </td>
             
 
-            <td class="description last">a handler which will get called with every successful poll</td>
+            <td class="description last">a handler which will get called with
+    every successful poll</td>
         </tr>
 
     
@@ -324,7 +367,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line60">line 60</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -332,6 +375,13 @@
 
     
 
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>validate options, throw Error on invalid options</li>
+        </ul>
+    </dd>
     
 </dl>
 
@@ -363,6 +413,226 @@
 
     
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="interval"><span class="type-signature"></span>interval<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    The interval of the poller instance.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line67">line 67</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="settings"><span class="type-signature"></span>settings<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    The active settings.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="~defaults"><span class="type-signature">(inner) </span>defaults<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    The default settings.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -477,7 +747,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line143">line 143</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line184">line 184</a>
     </li></ul></dd>
     
 
@@ -613,7 +883,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line175">line 175</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line217">line 217</a>
     </li></ul></dd>
     
 
@@ -744,7 +1014,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line82">line 82</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -896,7 +1166,7 @@ This method conveniently wraps Poller#get with a call to
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line126">line 126</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -904,6 +1174,171 @@ This method conveniently wraps Poller#get with a call to
 
     
 
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getJSONP"><span class="type-signature"></span>getJSONP<span class="signature">(url)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Get an URL via JSONP and parse the result as JSON.
+
+This method conveniently wraps Poller#get with a call to
+<code>JSON.parse</code>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The URL to get.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line146">line 146</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>possible to inject other document</li>
+        
+            <li>possible to inject other global scope (window)</li>
+        
+            <li>more robust callback name in order to avoid collisions</li>
+        
+            <li>when to reject Promises</li>
+        </ul>
+    </dd>
     
 </dl>
 
@@ -1068,7 +1503,7 @@ The action can be <code>start</code> (default), <code>stop</code> or
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line197">line 197</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line246">line 246</a>
     </li></ul></dd>
     
 
@@ -1266,7 +1701,7 @@ The action can be <code>start</code> (default), <code>stop</code> or
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller.js.html">poller.js</a>, <a href="poller.js.html#line149">line 149</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -1279,6 +1714,8 @@ The action can be <code>start</code> (default), <code>stop</code> or
     <dd class="tag-todo">
         <ul>
             <li>namespace event</li>
+        
+            <li>attach event to poller instance</li>
         </ul>
     </dd>
     
@@ -1311,13 +1748,13 @@ The action can be <code>start</code> (default), <code>stop</code> or
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-poller_poller.html">poller/poller</a></li></ul><h3>Classes</h3><ul><li><a href="module-poller_poller-DefaultAdapterFn.html">DefaultAdapterFn</a></li><li><a href="module-poller_poller-NullAdapterFn.html">NullAdapterFn</a></li><li><a href="module-poller_poller-Poller.html">Poller</a></li></ul><h3>Events</h3><ul><li><a href="module-poller_poller-Poller.html#event:polled">polled</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-common_countries.html">common/countries</a></li><li><a href="module-common_utils.html">common/utils</a></li><li><a href="module-poller_adapter_default.html">poller/adapter/default</a></li><li><a href="module-poller_adapter_null.html">poller/adapter/null</a></li><li><a href="module-poller_poller.html">poller/poller</a></li><li><a href="module-polyfills_element_remove.html">polyfills/element/remove</a></li><li><a href="module-progressbar_progressbar.html">progressbar/progressbar</a></li></ul><h3>Classes</h3><ul><li><a href="module-poller_adapter_default-DefaultAdapterFn.html">DefaultAdapterFn</a></li><li><a href="module-poller_adapter_null-NullAdapterFn.html">NullAdapterFn</a></li><li><a href="module-poller_poller-Poller.html">Poller</a></li><li><a href="module-progressbar_progressbar-Progressbar.html">Progressbar</a></li></ul><h3>Events</h3><ul><li><a href="module-poller_poller-Poller.html#event:polled">polled</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Jan 03 2016 16:46:24 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jan 26 2016 17:11:09 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
