@@ -14,7 +14,10 @@ module.exports = Poller;
 var extend = require('lodash/object/extend');
 /** Promise polyfill */
 require('es6-promise').polyfill();
+/** Element.prototype.remove() polyfill */
+require('../polyfills/element/remove').polyfill();
 
+var utils = require('../common/utils');
 var DefaultAdapterFn = require('./adapter/default');
 
 /**
@@ -24,6 +27,8 @@ var DefaultAdapterFn = require('./adapter/default');
  * @this {Poller}
  * @param {object} options - the options
  * @param {string} options.url - the URL to poll
+ * @param {string} [options.type='json'] - the type of the request, may be
+ *     <code>json</code> or <code>jsonp</code>
  * @param {number} [options.pollInterval=10000] - the time between polls in
  *     milliseconds
  * @param {function} [options.adapter=DefaultAdapterFn] - the function which
@@ -31,6 +36,7 @@ var DefaultAdapterFn = require('./adapter/default');
  * @param {function} [options.handler] - a handler which will get called with
  *     every successful poll
  * @public
+ * @todo validate options, throw Error on invalid options
  */
 function Poller(options) {
     // make it possible to use `Poller()` and `new Poller`
@@ -43,6 +49,7 @@ function Poller(options) {
      */
     var defaults = {
         url: null,
+        type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
         handler: null
@@ -122,6 +129,46 @@ Poller.prototype.getJSON = function (url) {
 };
 
 /**
+ * Get an URL via JSONP and parse the result as JSON.
+ *
+ * This method conveniently wraps {@link Poller#get} with a call to
+ * <code>JSON.parse</code>
+ *
+ * @method
+ * @param {string} url - The URL to get.
+ * @returns {Promise}
+ * @todo possible to inject other document
+ * @todo possible to inject other global scope (window)
+ * @todo more robust callback name in order to avoid collisions
+ * @todo when to reject Promises
+ */
+Poller.prototype.getJSONP = function (url) {
+    var callbackName = 'pollerJSONPCallback';
+    // return empty, i.e. fail silently if we have an collision
+    if (typeof window[callbackName] !== 'undefined') {
+        return new Promise(function (resolve) {
+            resolve({});
+        });
+    } else {
+        return new Promise(function (resolve) {
+            var scriptEl = document.createElement('script');
+            var requestUrl = utils.addQueryParams(url, {
+                callback: callbackName
+            });
+            window[callbackName] = function (data) {
+                // cleans itself when called
+                delete window[callbackName];
+                scriptEl.remove();
+                resolve(data);
+            };
+            scriptEl.setAttribute('src', requestUrl);
+            document.body.appendChild(scriptEl);
+        });
+    }
+
+};
+
+/**
  * Handle the response.
  *
  * Handle the response by emitting an event and calling an optional callback.
@@ -147,6 +194,7 @@ Poller.prototype._handleResponse = function (data) {
      * @param {object} details - the details of the CustomEvent
      * @param {object} details.data - the data of the response from the poll
      * @todo namespace event
+     * @todo attach event to poller instance
      */
     var event = document.createEvent('CustomEvent');
     event.initCustomEvent('polled', true, true, { data: data });
@@ -168,7 +216,14 @@ Poller.prototype._handleResponse = function (data) {
 Poller.prototype._poll = function (url) {
     // transform via JSON.parse resolve callback
     var self = this;
-    this.getJSON(url).then(function (response) {
+    var pollCallbackName;
+    if (this.settings.type === 'json') {
+        pollCallbackName = 'getJSON';
+    } else if (this.settings.type === 'jsonp') {
+        pollCallbackName = 'getJSONP';
+    }
+
+    this[pollCallbackName](url).then(function (response) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
         if ('console' in window) {
