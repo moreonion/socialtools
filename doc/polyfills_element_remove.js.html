@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: polyfills/element/remove.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,49 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: polyfills/element/remove.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * DOM Element.prototype.remove() polyfill
+ *
+ * Call with &lt;code>require('./polyfills/element/remove').polyfill();&lt;/code>
+ * from your module.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove
+ * @module polyfills/element/remove
+ */
 
+/* global module window */
 
-    <h3> </h3>
+module.exports = { polyfill: remove };
 
+/**
+ * Removes an element.
+ *
+ * @todo window replaceable
+ * @static
+ */
+function remove() {
+    if (typeof window !== 'undefined' &amp;&amp; !('remove' in window.Element.prototype)) {
+        window.Element.prototype.remove = function () {
+            if (this.parentNode) {
+                this.parentNode.removeChild(this);
+            }
+        };
+    }
+}
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+// vim: set et ts=4 sw=4 :
+</code></pre>
+        </article>
+    </section>
 
 
 

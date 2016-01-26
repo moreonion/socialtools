@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: poller/adapter/default.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,44 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: poller/adapter/default.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * DefaultAdapter module.
+ *
+ * @module poller/adapter/default
+ */
 
+/* global module */
 
-    <h3> </h3>
+/** Use the DefaultAdapterFn */
+module.exports = DefaultAdapterFn;
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * The default adapter function for the XHR response.
+ *
+ * The default adapter simply returns the response as-is.
+ * No transformation is done.
+ *
+ * @constructor
+ * @this {Poller}
+ * @param {object} response - The response object
+ * @returns {object}
+ * @todo Write tutorial
+ */
+function DefaultAdapterFn(response) {
+    return response;
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

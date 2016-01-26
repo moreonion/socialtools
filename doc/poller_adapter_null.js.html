@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: poller/adapter/null.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,42 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: poller/adapter/null.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * NullAdapter module.
+ *
+ * @module poller/adapter/null
+ */
 
+/* global module */
 
-    <h3> </h3>
+/** Use the NullAdapterFn */
+module.exports = NullAdapterFn;
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * A null adapter function for the XHR response.
+ *
+ * The null adapter returns nothing, i.e. &lt;code>null&lt;/code>.
+ * Not sure about use cases.
+ *
+ * @constructor
+ * @this {Poller}
+ * @returns {null}
+ */
+function NullAdapterFn() {
+    return null;
+}
+</code></pre>
+        </article>
+    </section>
 
 
 
