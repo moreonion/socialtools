@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var utils = require('../src/common/utils');
+var utils = require('../build/common/utils');
 
 var jsdom = require('mocha-jsdom');
 

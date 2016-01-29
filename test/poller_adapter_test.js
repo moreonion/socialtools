@@ -2,8 +2,8 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var DefaultAdapterFn = require('../src/poller/adapter/default');
-var NullAdapterFn = require('../src/poller/adapter/null');
+var DefaultAdapterFn = require('../build/poller/adapter/default');
+var NullAdapterFn = require('../build/poller/adapter/null');
 
 describe('DefaultAdapterFn', function () {
     describe('calling', function () {
