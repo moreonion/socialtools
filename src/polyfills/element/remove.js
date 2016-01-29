@@ -8,8 +8,9 @@
  * @module polyfills/element/remove
  */
 
-/* global module window */
+/* global module:true window */
 
+module = (typeof module === 'undefined') ? {} : module;
 module.exports = { polyfill: remove };
 
 /**

@@ -4,8 +4,9 @@
  * @module poller/adapter/default
  */
 
-/* global module */
+/* global module:true */
 
+module = (typeof module === 'undefined') ? {} : module;
 /** Use the DefaultAdapterFn */
 module.exports = DefaultAdapterFn;
 

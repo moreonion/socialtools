@@ -4,8 +4,9 @@
  * @module poller/adapter/null
  */
 
-/* global module */
+/* global module:true */
 
+module = (typeof module === 'undefined') ? {} : module;
 /** Use the NullAdapterFn */
 module.exports = NullAdapterFn;
 
