@@ -2,6 +2,7 @@
  * Progressbar module.
  *
  * @module progressbar/progressbar
+ * @requires ../polyfills/object/assign
  */
 
 /* global module require */
@@ -9,11 +10,11 @@
 /** Create a Progressbar */
 module.exports = Progressbar;
 
-var extend = require('lodash/object/extend');
+/** Object.assign() polyfill */
+require('../polyfills/object/assign').polyfill();
 
 var utils = require('../common/utils');
 var Poller = require('../poller/poller');
-
 /**
  * Creates a Progressbar instance.
  *
@@ -76,7 +77,7 @@ function Progressbar(options) {
      * @instance
      * @memberof module:progressbar/progressbar~Progressbar
      */
-    this.settings = extend(defaults, options);
+    this.settings = Object.assign(defaults, options);
 
     /**
      * The current count state. The targets are compared against this value.

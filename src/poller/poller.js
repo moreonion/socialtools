@@ -2,8 +2,8 @@
  * Poller module.
  *
  * @module poller/poller
- * @requires lodash/object/extend
  * @requires es6-promise
+ * @requires ../polyfills/object/assign
  */
 
 /* global module require */
@@ -11,9 +11,10 @@
 /** Create a poller */
 module.exports = Poller;
 
-var extend = require('lodash/object/extend');
 /** Promise polyfill */
 require('es6-promise').polyfill();
+/** Object.assign() polyfill */
+require('../polyfills/object/assign').polyfill();
 /** Element.prototype.remove() polyfill */
 require('../polyfills/element/remove').polyfill();
 
@@ -62,7 +63,7 @@ function Poller(options) {
      * @instance
      * @memberof module:poller/poller~Poller
      */
-    this.settings = extend(defaults, options);
+    this.settings = Object.assign(defaults, options);
 
     /**
      * The interval of the poller instance.
