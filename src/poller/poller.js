@@ -52,6 +52,7 @@ function Poller(options) {
         type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
+        eventName: 'polled',
         handler: null
     };
 
@@ -197,7 +198,7 @@ Poller.prototype._handleResponse = function (data) {
      * @todo attach event to poller instance
      */
     var event = document.createEvent('CustomEvent');
-    event.initCustomEvent('polled', true, true, { data: data });
+    event.initCustomEvent(this.settings.eventName, true, true, { data: data });
     document.dispatchEvent(event);
 
     // call handler if exists
