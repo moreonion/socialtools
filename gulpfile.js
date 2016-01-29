@@ -7,12 +7,16 @@ var rename = require('gulp-rename');
 var umd = require('gulp-umd');
 
 
+/* ======================================================================= */
+/*            DISTRIBUTE                                                   */
+/* ======================================================================= */
+
 gulp.task('js', function() {
     var b = browserify({
-        entries: ['./src/main.js']
+        entries: ['./build/socialtools-full.js']
     });
     return b.bundle()
-        .pipe(source('socialtools.js'))
+        .pipe(source('socialtools-full.js'))
         .pipe(gulp.dest('dist'))
         .pipe(buffer())
         .pipe(uglify())
@@ -154,6 +158,46 @@ gulp.task('progressbar/progressbar', function() {
       .pipe(gulp.dest('build/progressbar/'))
 });
 
+/* ---------- distribution ------------------------------------------------ */
+
+gulp.task('socialtools-full', function() {
+    return gulp.src('src/socialtools-full.js')
+      .pipe(umd({
+          namespace: function (file) {
+              return 'Socialtools';
+          },
+          exports: function (file) {
+              return 'module.exports';
+          },
+          dependencies: function (file) {
+              return [
+                  {
+                      name: 'utils',
+                      amd: './common/utils',
+                      cjs: './common/utils',
+                      global: 'utils',
+                      param: 'utils'
+                  },
+                  {
+                      name: 'Progressbar',
+                      amd: './progressbar/progressbar',
+                      cjs: './progressbar/progressbar',
+                      global: 'Progressbar',
+                      param: 'Progressbar'
+                  },
+                  {
+                      name: 'Poller',
+                      amd: './poller/poller',
+                      cjs: './poller/poller',
+                      global: 'Poller',
+                      param: 'Poller'
+                  },
+              ];
+          }
+      }))
+      .pipe(gulp.dest('build/'))
+});
+
 /* ======================================================================= */
 /*            COMPOUND TASKS                                               */
 /* ======================================================================= */
@@ -163,7 +207,8 @@ gulp.task('umd', [
     'polyfills',
     'poller/adapters',
     'poller/poller',
-    'progressbar/progressbar'
+    'progressbar/progressbar',
+    'socialtools-full'
 ]);
 
 gulp.task('build', ['es6-promise', 'umd']);
