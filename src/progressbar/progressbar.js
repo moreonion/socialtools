@@ -3,6 +3,8 @@
  *
  * @module progressbar/progressbar
  * @requires ../polyfills/object/assign
+ * @requires ../poller/poller
+ * @requires ../common/utils
  */
 
 /* global module require */

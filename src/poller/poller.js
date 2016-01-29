@@ -4,6 +4,9 @@
  * @module poller/poller
  * @requires es6-promise
  * @requires ../polyfills/object/assign
+ * @requires ../polyfills/element/remove
+ * @requires ../common/utils
+ * @requires ./adapter/default
  */
 
 /* global module require */
