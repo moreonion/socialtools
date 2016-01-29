@@ -9,20 +9,18 @@
  * @requires ./adapter/default
  */
 
-/* global module require */
+/* global module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
 
+module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
 
 /** Promise polyfill */
-require('es6-promise').polyfill();
-/** Object.assign() polyfill */
-require('../polyfills/object/assign').polyfill();
+promisePolyfill.polyfill();
+/** Obejct.assign() polyfill */
+assignPolyfill.polyfill();
 /** Element.prototype.remove() polyfill */
-require('../polyfills/element/remove').polyfill();
-
-var utils = require('../common/utils');
-var DefaultAdapterFn = require('./adapter/default');
+removePolyfill.polyfill();
 
 /**
  * Creates a Poller instance.

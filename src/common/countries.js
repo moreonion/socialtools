@@ -4,9 +4,10 @@
  * @module common/countries
  */
 
-/*global module */
+/*global module:true */
 /*eslint quote-props:0 */
 
+module = (typeof module === 'undefined') ? {} : module;
 module.exports = countries;
 
 /**

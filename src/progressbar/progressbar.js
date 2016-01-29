@@ -7,16 +7,15 @@
  * @requires ../common/utils
  */
 
-/* global module require */
+/* global module:true assignPolyfill utils Poller */
 
+module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
 
 /** Object.assign() polyfill */
-require('../polyfills/object/assign').polyfill();
+assignPolyfill.polyfill();
 
-var utils = require('../common/utils');
-var Poller = require('../poller/poller');
 /**
  * Creates a Progressbar instance.
  *

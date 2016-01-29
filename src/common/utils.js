@@ -6,8 +6,9 @@
  * @module common/utils
  */
 
-/*global module */
+/*global module:true */
 
+module = (typeof module === 'undefined') ? {} : module;
 module.exports = {
     toInteger: toInteger,
     serializeToQueryString: serializeToQueryString,
