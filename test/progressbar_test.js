@@ -2,8 +2,8 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var Progressbar = require('../src/progressbar/progressbar');
-var Poller = require('../src/poller/poller');
+var Progressbar = require('../build/progressbar/progressbar');
+var Poller = require('../build/poller/poller');
 
 var jsdom = require('mocha-jsdom');
 

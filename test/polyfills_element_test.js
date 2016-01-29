@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var polyfill = require('../src/polyfills/element/remove');
+var polyfill = require('../build/polyfills/element/remove');
 
 var jsdom = require('mocha-jsdom');
 
