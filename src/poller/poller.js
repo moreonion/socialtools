@@ -45,6 +45,7 @@ function Poller(options) {
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
         eventName: 'polled',
+        callbackNamePrefixJSONP: 'pollerJSONPCallback',
         handler: null
     };
 
@@ -132,33 +133,42 @@ Poller.prototype.getJSON = function (url) {
  * @returns {Promise}
  * @todo possible to inject other document
  * @todo possible to inject other global scope (window)
- * @todo more robust callback name in order to avoid collisions
  * @todo when to reject Promises
  */
 Poller.prototype.getJSONP = function (url) {
-    var callbackName = 'pollerJSONPCallback';
-    // return empty, i.e. fail silently if we have an collision
-    if (typeof window[callbackName] !== 'undefined') {
-        return new Promise(function (resolve) {
-            resolve({});
-        });
-    } else {
-        return new Promise(function (resolve) {
-            var scriptEl = document.createElement('script');
-            var requestUrl = utils.addQueryParams(url, {
-                callback: callbackName
-            });
-            window[callbackName] = function (data) {
-                // cleans itself when called
-                delete window[callbackName];
-                scriptEl.remove();
-                resolve(data);
-            };
-            scriptEl.setAttribute('src', requestUrl);
-            document.body.appendChild(scriptEl);
-        });
+    // coerce callbackNamePrefix into a string
+    var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
+    var randomPart = '';
+    var callbackName = callbackNamePrefix + randomPart;
+
+    // try if prefix is of length 0 or
+    if (callbackNamePrefix.length === 0) {
+        var q = Math.floor(Math.random() * Date.now());
+        randomPart = q.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
     }
 
+    // try as long as we hit an unset identifier to use
+    while (typeof window[callbackName] !== 'undefined') {
+        var r = Math.floor(Math.random() * Date.now());
+        randomPart = r.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
+    }
+
+    return new Promise(function (resolve) {
+        var scriptEl = document.createElement('script');
+        var requestUrl = utils.addQueryParams(url, {
+            callback: callbackName
+        });
+        window[callbackName] = function (data) {
+            // cleans itself when called
+            delete window[callbackName];
+            scriptEl.remove();
+            resolve(data);
+        };
+        scriptEl.setAttribute('src', requestUrl);
+        document.body.appendChild(scriptEl);
+    });
 };
 
 /**
