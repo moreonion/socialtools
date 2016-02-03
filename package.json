@@ -23,7 +23,7 @@
     "watch-browserify": "watchify ./src/main.js -o ./dist/bundle.js -dv",
     "watch": "npm run watch-browserify",
     "build-browserify": "browserify ./src/main.js > ./dist/bundle.js",
-    "build-js": "gulp js",
+    "build-js": "gulp",
     "build": "npm run build-js",
     "mocha": "mocha --reporter spec",
     "test": "istanbul cover _mocha",
