@@ -12,6 +12,14 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
 
+/** Poller is a "soft" dependency
+ *
+ * If it is not defined we generate one adhoc of Progressbar
+ */
+if (typeof Poller === 'undefined') {
+    var Poller = function () {};
+}
+
 /**
  * Creates a Progressbar instance.
  *
