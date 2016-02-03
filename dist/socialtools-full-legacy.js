@@ -172,20 +172,17 @@ return module.exports;
 },{}],3:[function(require,module,exports){
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['es6-promise', '../polyfills/object/assign', '../polyfills/element/remove', '../common/utils', './adapter/default'], factory);
+    define(['../common/utils', './adapter/default'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('es6-promise'), require('../polyfills/object/assign'), require('../polyfills/element/remove'), require('../common/utils'), require('./adapter/default'));
+    module.exports = factory(require('../common/utils'), require('./adapter/default'));
   } else {
-    root.Poller = factory(root.promisePolyfill, root.assignPolyfill, root.removePolyfill, root.utils, root.DefaultAdapterFn);
+    root.Poller = factory(root.utils, root.DefaultAdapterFn);
   }
-}(this, function(promisePolyfill, assignPolyfill, removePolyfill, utils, DefaultAdapterFn) {
+}(this, function(utils, DefaultAdapterFn) {
 /**
  * Poller module.
  *
  * @module poller/poller
- * @requires es6-promise
- * @requires ../polyfills/object/assign
- * @requires ../polyfills/element/remove
  * @requires ../common/utils
  * @requires ./adapter/default
  */
@@ -195,13 +192,6 @@ return module.exports;
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
-
-/** Promise polyfill */
-promisePolyfill.polyfill();
-/** Obejct.assign() polyfill */
-assignPolyfill.polyfill();
-/** Element.prototype.remove() polyfill */
-removePolyfill.polyfill();
 
 /**
  * Creates a Poller instance.
@@ -448,7 +438,7 @@ Poller.prototype.poll = function (action) {
 return module.exports;
 }));
 
-},{"../common/utils":1,"../polyfills/element/remove":4,"../polyfills/object/assign":5,"./adapter/default":2,"es6-promise":9}],4:[function(require,module,exports){
+},{"../common/utils":1,"./adapter/default":2}],4:[function(require,module,exports){
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define([], factory);
@@ -555,18 +545,17 @@ return module.exports;
 },{}],6:[function(require,module,exports){
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['../polyfills/element/remove', '../common/utils', '../poller/poller'], factory);
+    define(['../common/utils', '../poller/poller'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('../polyfills/element/remove'), require('../common/utils'), require('../poller/poller'));
+    module.exports = factory(require('../common/utils'), require('../poller/poller'));
   } else {
-    root.Progressbar = factory(root.assignPolyfill, root.utils, root.Poller);
+    root.Progressbar = factory(root.utils, root.Poller);
   }
-}(this, function(assignPolyfill, utils, Poller) {
+}(this, function(utils, Poller) {
 /**
  * Progressbar module.
  *
  * @module progressbar/progressbar
- * @requires ../polyfills/object/assign
  * @requires ../poller/poller
  * @requires ../common/utils
  */
@@ -576,9 +565,6 @@ return module.exports;
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
-
-/** Object.assign() polyfill */
-assignPolyfill.polyfill();
 
 /**
  * Creates a Progressbar instance.
@@ -876,31 +862,51 @@ Progressbar.prototype.getMissingCount = function (floor) {
 return module.exports;
 }));
 
-},{"../common/utils":1,"../poller/poller":3,"../polyfills/element/remove":4}],7:[function(require,module,exports){
+},{"../common/utils":1,"../poller/poller":3}],7:[function(require,module,exports){
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['./common/utils', './progressbar/progressbar', './poller/poller'], factory);
+    define(['es6-promise', './polyfills/object/assign', './polyfills/element/remove', './common/utils', './progressbar/progressbar', './poller/poller'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('./common/utils'), require('./progressbar/progressbar'), require('./poller/poller'));
+    module.exports = factory(require('es6-promise'), require('./polyfills/object/assign'), require('./polyfills/element/remove'), require('./common/utils'), require('./progressbar/progressbar'), require('./poller/poller'));
   } else {
-    root.Socialtools = factory(root.utils, root.Progressbar, root.Poller);
+    root.Socialtools = factory(root.promisePolyfill, root.assignPolyfill, root.removePolyfill, root.utils, root.Progressbar, root.Poller);
   }
-}(this, function(utils, Progressbar, Poller) {
-/* global module:true utils Poller Progressbar */
+}(this, function(promisePolyfill, assignPolyfill, removePolyfill, utils, Progressbar, Poller) {
+/**
+ * The Socialtools "legacy" bundle.
+ *
+ * This includes all the Socialtools and adds polyfills to support older
+ * browsers.
+ *
+ * Currently IE9+, Edge, Chrome, Firefox and Safari are supported.
+ *
+ * @requires es6-promise
+ * @requires ./polyfills/object/assign
+ * @requires ./polyfills/element/remove
+ */
+
+/* global module:true utils Poller Progressbar promisePolyfill assignPolyfill removePolyfill */
 
 module = (typeof module === 'undefined') ? {} : module;
 module.exports = {
     utils: utils,
     Poller: Poller,
     Progressbar: Progressbar
-}
+};
+
+/** Promise polyfill */
+promisePolyfill.polyfill();
+/** Obejct.assign() polyfill */
+assignPolyfill.polyfill();
+/** Element.prototype.remove() polyfill */
+removePolyfill.polyfill();
 
 // vim: set et ts=4 sw=4 :
 
 return module.exports;
 }));
 
-},{"./common/utils":1,"./poller/poller":3,"./progressbar/progressbar":6}],8:[function(require,module,exports){
+},{"./common/utils":1,"./poller/poller":3,"./polyfills/element/remove":4,"./polyfills/object/assign":5,"./progressbar/progressbar":6,"es6-promise":9}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};

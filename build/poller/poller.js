@@ -1,19 +1,16 @@
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['es6-promise', '../polyfills/object/assign', '../polyfills/element/remove', '../common/utils', './adapter/default'], factory);
+    define(['../common/utils', './adapter/default'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('es6-promise'), require('../polyfills/object/assign'), require('../polyfills/element/remove'), require('../common/utils'), require('./adapter/default'));
+    module.exports = factory(require('../common/utils'), require('./adapter/default'));
   } else {
-    root.Poller = factory(root.promisePolyfill, root.assignPolyfill, root.removePolyfill, root.utils, root.DefaultAdapterFn);
+    root.Poller = factory(root.utils, root.DefaultAdapterFn);
   }
-}(this, function(promisePolyfill, assignPolyfill, removePolyfill, utils, DefaultAdapterFn) {
+}(this, function(utils, DefaultAdapterFn) {
 /**
  * Poller module.
  *
  * @module poller/poller
- * @requires es6-promise
- * @requires ../polyfills/object/assign
- * @requires ../polyfills/element/remove
  * @requires ../common/utils
  * @requires ./adapter/default
  */
@@ -23,13 +20,6 @@
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
-
-/** Promise polyfill */
-promisePolyfill.polyfill();
-/** Obejct.assign() polyfill */
-assignPolyfill.polyfill();
-/** Element.prototype.remove() polyfill */
-removePolyfill.polyfill();
 
 /**
  * Creates a Poller instance.
