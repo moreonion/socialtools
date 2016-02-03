@@ -11,12 +11,25 @@ var umd = require('gulp-umd');
 /*            DISTRIBUTE                                                   */
 /* ======================================================================= */
 
-gulp.task('js', function() {
+gulp.task('js-modern', function() {
     var b = browserify({
-        entries: ['./build/socialtools-full.js']
+        entries: ['./build/socialtools-full-modern.js']
     });
     return b.bundle()
-        .pipe(source('socialtools-full.js'))
+        .pipe(source('socialtools-full-modern.js'))
+        .pipe(gulp.dest('dist'))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(rename({ extname: '.min.js' }))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('js-legacy', function() {
+    var b = browserify({
+        entries: ['./build/socialtools-full-legacy.js']
+    });
+    return b.bundle()
+        .pipe(source('socialtools-full-legacy.js'))
         .pipe(gulp.dest('dist'))
         .pipe(buffer())
         .pipe(uglify())
@@ -80,27 +93,6 @@ gulp.task('poller/poller', function() {
           dependencies: function (file) {
               return [
                   {
-                      name: 'es6promise',
-                      amd: 'es6-promise',
-                      cjs: 'es6-promise',
-                      global: 'promisePolyfill',
-                      param: 'promisePolyfill'
-                  },
-                  {
-                      name: 'assign',
-                      amd: '../polyfills/object/assign',
-                      cjs: '../polyfills/object/assign',
-                      global: 'assignPolyfill',
-                      param: 'assignPolyfill'
-                  },
-                  {
-                      name: 'remove',
-                      amd: '../polyfills/element/remove',
-                      cjs: '../polyfills/element/remove',
-                      global: 'removePolyfill',
-                      param: 'removePolyfill'
-                  },
-                  {
                       name: 'utils',
                       amd: '../common/utils',
                       cjs: '../common/utils',
@@ -132,13 +124,6 @@ gulp.task('progressbar/progressbar', function() {
           dependencies: function (file) {
               return [
                   {
-                      name: 'assign',
-                      amd: '../polyfills/element/remove',
-                      cjs: '../polyfills/element/remove',
-                      global: 'assignPolyfill',
-                      param: 'assignPolyfill'
-                  },
-                  {
                       name: 'utils',
                       amd: '../common/utils',
                       cjs: '../common/utils',
@@ -160,8 +145,8 @@ gulp.task('progressbar/progressbar', function() {
 
 /* ---------- distribution ------------------------------------------------ */
 
-gulp.task('socialtools-full', function() {
-    return gulp.src('src/socialtools-full.js')
+gulp.task('socialtools-full-modern', function() {
+    return gulp.src('src/socialtools-full-modern.js')
       .pipe(umd({
           namespace: function (file) {
               return 'Socialtools';
@@ -171,6 +156,65 @@ gulp.task('socialtools-full', function() {
           },
           dependencies: function (file) {
               return [
+                  {
+                      name: 'utils',
+                      amd: './common/utils',
+                      cjs: './common/utils',
+                      global: 'utils',
+                      param: 'utils'
+                  },
+                  {
+                      name: 'Progressbar',
+                      amd: './progressbar/progressbar',
+                      cjs: './progressbar/progressbar',
+                      global: 'Progressbar',
+                      param: 'Progressbar'
+                  },
+                  {
+                      name: 'Poller',
+                      amd: './poller/poller',
+                      cjs: './poller/poller',
+                      global: 'Poller',
+                      param: 'Poller'
+                  },
+              ];
+          }
+      }))
+      .pipe(gulp.dest('build/'))
+});
+
+gulp.task('socialtools-full-legacy', function() {
+    return gulp.src('src/socialtools-full-legacy.js')
+      .pipe(umd({
+          namespace: function (file) {
+              return 'Socialtools';
+          },
+          exports: function (file) {
+              return 'module.exports';
+          },
+          dependencies: function (file) {
+              return [
+                  {
+                      name: 'es6promise',
+                      amd: 'es6-promise',
+                      cjs: 'es6-promise',
+                      global: 'promisePolyfill',
+                      param: 'promisePolyfill'
+                  },
+                  {
+                      name: 'assign',
+                      amd: './polyfills/object/assign',
+                      cjs: './polyfills/object/assign',
+                      global: 'assignPolyfill',
+                      param: 'assignPolyfill'
+                  },
+                  {
+                      name: 'remove',
+                      amd: './polyfills/element/remove',
+                      cjs: './polyfills/element/remove',
+                      global: 'removePolyfill',
+                      param: 'removePolyfill'
+                  },
                   {
                       name: 'utils',
                       amd: './common/utils',
@@ -208,9 +252,11 @@ gulp.task('umd', [
     'poller/adapters',
     'poller/poller',
     'progressbar/progressbar',
-    'socialtools-full'
+    'socialtools-full-legacy',
+    'socialtools-full-modern'
 ]);
 
+gulp.task('js', ['js-legacy', 'js-modern']);
 gulp.task('build', ['es6-promise', 'umd']);
 gulp.task('default', ['build', 'js']);
 
