@@ -5,7 +5,7 @@ require.config({
 });
 
 require([
-    'socialtools-full',
+    'socialtools-full-modern',
     'common/utils'
 ], function (_socialtools, _utils) {
     // the "full" distribution

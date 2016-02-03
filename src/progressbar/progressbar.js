@@ -2,7 +2,6 @@
  * Progressbar module.
  *
  * @module progressbar/progressbar
- * @requires ../polyfills/object/assign
  * @requires ../poller/poller
  * @requires ../common/utils
  */
@@ -12,9 +11,6 @@
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
-
-/** Object.assign() polyfill */
-assignPolyfill.polyfill();
 
 /**
  * Creates a Progressbar instance.

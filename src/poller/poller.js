@@ -2,9 +2,6 @@
  * Poller module.
  *
  * @module poller/poller
- * @requires es6-promise
- * @requires ../polyfills/object/assign
- * @requires ../polyfills/element/remove
  * @requires ../common/utils
  * @requires ./adapter/default
  */
@@ -14,13 +11,6 @@
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
-
-/** Promise polyfill */
-promisePolyfill.polyfill();
-/** Obejct.assign() polyfill */
-assignPolyfill.polyfill();
-/** Element.prototype.remove() polyfill */
-removePolyfill.polyfill();
 
 /**
  * Creates a Poller instance.
