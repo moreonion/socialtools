@@ -7,6 +7,21 @@ var rename = require('gulp-rename');
 var umd = require('gulp-umd');
 
 
+
+/**
+ * As vinyl in gulp is not up-to-date yet, we cannot utilized file.stem for now.
+ * This is a helper function for that.
+ *
+ * @see http://stackoverflow.com/questions/3820381/need-a-basename-function-in-javascript
+ */
+function baseName (str) {
+    var base = new String(str).substring(str.lastIndexOf('/') + 1);
+    if(base.lastIndexOf(".") != -1) {
+        base = base.substring(0, base.lastIndexOf("."));
+    }
+    return base;
+}
+
 /* ======================================================================= */
 /*            DISTRIBUTE                                                   */
 /* ======================================================================= */
@@ -52,10 +67,13 @@ gulp.task('es6-promise', function() {
 /* ----------- socialtools modules --------------------------------------- */
 
 gulp.task('common', function() {
-    return gulp.src('src/common/**/*.js')
+    return gulp.src('src/common/*.js')
       .pipe(umd({
           exports: function (file) {
               return 'module.exports';
+          },
+          namespace: function (file) {
+              return baseName(file.path)
           }
       }))
       .pipe(gulp.dest('build/common/'))
@@ -66,6 +84,9 @@ gulp.task('polyfills', function() {
       .pipe(umd({
           exports: function (file) {
               return 'module.exports';
+          },
+          namespace: function (file) {
+              return baseName(file.path) + 'Polyfill'
           }
       }))
       .pipe(gulp.dest('build/polyfills'))
@@ -76,6 +97,9 @@ gulp.task('poller/adapters', function() {
       .pipe(umd({
           exports: function (file) {
               return 'module.exports';
+          },
+          namespace: function (file) {
+              return baseName(file.path) + 'Adapter'
           }
       }))
       .pipe(gulp.dest('build/poller/adapter/'))
@@ -84,11 +108,11 @@ gulp.task('poller/adapters', function() {
 gulp.task('poller/poller', function() {
     return gulp.src('src/poller/poller.js')
       .pipe(umd({
-          namespace: function (file) {
-              return 'Poller';
-          },
           exports: function (file) {
               return 'module.exports';
+          },
+          namespace: function (file) {
+              return 'Poller';
           },
           dependencies: function (file) {
               return [
@@ -103,7 +127,7 @@ gulp.task('poller/poller', function() {
                       name: 'DefaultAdapterFn',
                       amd: './adapter/default',
                       cjs: './adapter/default',
-                      global: 'DefaultAdapterFn',
+                      global: 'defaultAdapter',
                       param: 'DefaultAdapterFn'
                   },
               ];
@@ -115,11 +139,11 @@ gulp.task('poller/poller', function() {
 gulp.task('progressbar/progressbar', function() {
     return gulp.src('src/progressbar/progressbar.js')
       .pipe(umd({
-          namespace: function (file) {
-              return 'Progressbar';
-          },
           exports: function (file) {
               return 'module.exports';
+          },
+          namespace: function (file) {
+              return 'Progressbar';
           },
           dependencies: function (file) {
               return [
