@@ -1,17 +1,16 @@
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['../polyfills/element/remove', '../common/utils', '../poller/poller'], factory);
+    define(['../common/utils', '../poller/poller'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('../polyfills/element/remove'), require('../common/utils'), require('../poller/poller'));
+    module.exports = factory(require('../common/utils'), require('../poller/poller'));
   } else {
-    root.Progressbar = factory(root.assignPolyfill, root.utils, root.Poller);
+    root.Progressbar = factory(root.utils, root.Poller);
   }
-}(this, function(assignPolyfill, utils, Poller) {
+}(this, function(utils, Poller) {
 /**
  * Progressbar module.
  *
  * @module progressbar/progressbar
- * @requires ../polyfills/object/assign
  * @requires ../poller/poller
  * @requires ../common/utils
  */
@@ -21,9 +20,6 @@
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
-
-/** Object.assign() polyfill */
-assignPolyfill.polyfill();
 
 /**
  * Creates a Progressbar instance.

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: polyfills/element/remove.js</title>
+    <title>JSDoc: Source: polyfills/object/assign.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: polyfills/element/remove.js</h1>
+    <h1 class="page-title">Source: polyfills/object/assign.js</h1>
 
     
 
@@ -27,33 +27,45 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * DOM Element.prototype.remove() polyfill
+ * Object.assign() polyfill
  *
- * Call with &lt;code>require('./polyfills/element/remove').polyfill();&lt;/code>
- * from your module.
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove
- * @module polyfills/element/remove
+ * @see https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+ * @module polyfills/object/assign
  */
 
 /* global module:true window */
 
 module = (typeof module === 'undefined') ? {} : module;
-module.exports = { polyfill: remove };
+module.exports = { polyfill: assign };
 
 /**
- * Removes an element.
+ * Merges properties from sources into a target object.
  *
- * @todo window replaceable
  * @static
  */
-function remove() {
-    if (typeof window !== 'undefined' &amp;&amp; !('remove' in window.Element.prototype)) {
-        window.Element.prototype.remove = function () {
-            if (this.parentNode) {
-                this.parentNode.removeChild(this);
-            }
-        };
+function assign() {
+    if (typeof Object.assign != 'function') {
+        (function () {
+            Object.assign = function (target) {
+                'use strict';
+                if (target === undefined || target === null) {
+                    throw new TypeError('Cannot convert undefined or null to object');
+                }
+
+                var output = Object(target);
+                for (var index = 1; index &lt; arguments.length; index++) {
+                    var source = arguments[index];
+                    if (source !== undefined &amp;&amp; source !== null) {
+                        for (var nextKey in source) {
+                            if (source.hasOwnProperty(nextKey)) {
+                                output[nextKey] = source[nextKey];
+                            }
+                        }
+                    }
+                }
+                return output;
+            };
+        })();
     }
 }
 

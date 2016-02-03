@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: polyfills/element/remove.js</title>
+    <title>JSDoc: Module: polyfills/object/assign</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,50 +17,219 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: polyfills/element/remove.js</h1>
+    <h1 class="page-title">Module: polyfills/object/assign</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * DOM Element.prototype.remove() polyfill
- *
- * Call with &lt;code>require('./polyfills/element/remove').polyfill();&lt;/code>
- * from your module.
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove
- * @module polyfills/element/remove
- */
+        
+            
+        
+    
+</header>
 
-/* global module:true window */
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Object.assign() polyfill</div>
+        
 
-module = (typeof module === 'undefined') ? {} : module;
-module.exports = { polyfill: remove };
+        
+            
 
-/**
- * Removes an element.
- *
- * @todo window replaceable
- * @static
- */
-function remove() {
-    if (typeof window !== 'undefined' &amp;&amp; !('remove' in window.Element.prototype)) {
-        window.Element.prototype.remove = function () {
-            if (this.parentNode) {
-                this.parentNode.removeChild(this);
-            }
-        };
-    }
-}
 
-// vim: set et ts=4 sw=4 :
-</code></pre>
-        </article>
-    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="polyfills_object_assign.js.html">polyfills/object/assign.js</a>, <a href="polyfills_object_assign.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".assign"><span class="type-signature">(static) </span>assign<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Merges properties from sources into a target object.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="polyfills_object_assign.js.html">polyfills/object/assign.js</a>, <a href="polyfills_object_assign.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
