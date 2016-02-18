@@ -6,7 +6,7 @@
  * @requires ./adapter/default
  */
 
-/* global module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
+/* global Promise module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
 
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
