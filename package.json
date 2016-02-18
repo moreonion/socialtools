@@ -28,7 +28,7 @@
     "mocha": "mocha --reporter spec",
     "test": "istanbul cover _mocha",
     "lint": "eslint ./src/{,**/}*.js ./test/{,**/}*.js",
-    "doc": "jsdoc -r ./src/ -c ./.jsdoc.conf.json"
+    "doc": "jsdoc --private -r ./src/ -c ./.jsdoc.conf.json"
   },
   "dependencies": {},
   "devDependencies": {
