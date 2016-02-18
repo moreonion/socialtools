@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Remove = factory();
+    root.removePolyfill = factory();
   }
 }(this, function() {
 /**

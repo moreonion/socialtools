@@ -5,7 +5,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Utils = factory();
+    root.utils = factory();
   }
 }(this, function() {
 /**
@@ -135,7 +135,7 @@ return module.exports;
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Default = factory();
+    root.defaultAdapter = factory();
   }
 }(this, function() {
 /**
@@ -176,7 +176,7 @@ return module.exports;
   } else if (typeof exports === 'object') {
     module.exports = factory(require('../common/utils'), require('./adapter/default'));
   } else {
-    root.Poller = factory(root.utils, root.DefaultAdapterFn);
+    root.Poller = factory(root.utils, root.defaultAdapter);
   }
 }(this, function(utils, DefaultAdapterFn) {
 /**
@@ -187,7 +187,7 @@ return module.exports;
  * @requires ./adapter/default
  */
 
-/* global module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
+/* global Promise module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
 
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
@@ -226,6 +226,7 @@ function Poller(options) {
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
         eventName: 'polled',
+        callbackNamePrefixJSONP: 'pollerJSONPCallback',
         handler: null
     };
 
@@ -313,33 +314,42 @@ Poller.prototype.getJSON = function (url) {
  * @returns {Promise}
  * @todo possible to inject other document
  * @todo possible to inject other global scope (window)
- * @todo more robust callback name in order to avoid collisions
  * @todo when to reject Promises
  */
 Poller.prototype.getJSONP = function (url) {
-    var callbackName = 'pollerJSONPCallback';
-    // return empty, i.e. fail silently if we have an collision
-    if (typeof window[callbackName] !== 'undefined') {
-        return new Promise(function (resolve) {
-            resolve({});
-        });
-    } else {
-        return new Promise(function (resolve) {
-            var scriptEl = document.createElement('script');
-            var requestUrl = utils.addQueryParams(url, {
-                callback: callbackName
-            });
-            window[callbackName] = function (data) {
-                // cleans itself when called
-                delete window[callbackName];
-                scriptEl.remove();
-                resolve(data);
-            };
-            scriptEl.setAttribute('src', requestUrl);
-            document.body.appendChild(scriptEl);
-        });
+    // coerce callbackNamePrefix into a string
+    var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
+    var randomPart = '';
+    var callbackName = callbackNamePrefix + randomPart;
+
+    // try if prefix is of length 0 or
+    if (callbackNamePrefix.length === 0) {
+        var q = Math.floor(Math.random() * Date.now());
+        randomPart = q.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
     }
 
+    // try as long as we hit an unset identifier to use
+    while (typeof window[callbackName] !== 'undefined') {
+        var r = Math.floor(Math.random() * Date.now());
+        randomPart = r.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
+    }
+
+    return new Promise(function (resolve) {
+        var scriptEl = document.createElement('script');
+        var requestUrl = utils.addQueryParams(url, {
+            callback: callbackName
+        });
+        window[callbackName] = function (data) {
+            // cleans itself when called
+            delete window[callbackName];
+            scriptEl.remove();
+            resolve(data);
+        };
+        scriptEl.setAttribute('src', requestUrl);
+        document.body.appendChild(scriptEl);
+    });
 };
 
 /**
@@ -445,7 +455,7 @@ return module.exports;
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Remove = factory();
+    root.removePolyfill = factory();
   }
 }(this, function() {
 /**
@@ -491,7 +501,7 @@ return module.exports;
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Assign = factory();
+    root.assignPolyfill = factory();
   }
 }(this, function() {
 /**
@@ -560,11 +570,19 @@ return module.exports;
  * @requires ../common/utils
  */
 
-/* global module:true assignPolyfill utils Poller */
+/* global module:true assignPolyfill utils Poller:true */
 
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
+
+/** Poller is a "soft" dependency
+ *
+ * If it is not defined we generate one adhoc of Progressbar
+ */
+if (typeof Poller === 'undefined') {
+    var Poller = function () {};
+}
 
 /**
  * Creates a Progressbar instance.
@@ -880,6 +898,7 @@ return module.exports;
  *
  * Currently IE9+, Edge, Chrome, Firefox and Safari are supported.
  *
+ * @module socialtools-full-legacy
  * @requires es6-promise
  * @requires ./polyfills/object/assign
  * @requires ./polyfills/element/remove
@@ -1006,7 +1025,7 @@ process.umask = function() { return 0; };
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   3.0.2
+ * @version   3.1.2
  */
 
 (function() {
@@ -1034,7 +1053,6 @@ process.umask = function() { return 0; };
 
     var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
     var lib$es6$promise$asap$$len = 0;
-    var lib$es6$promise$asap$$toString = {}.toString;
     var lib$es6$promise$asap$$vertxNext;
     var lib$es6$promise$asap$$customSchedulerFn;
 
@@ -1153,6 +1171,42 @@ process.umask = function() { return 0; };
     } else {
       lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
     }
+    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+      var parent = this;
+      var state = parent._state;
+
+      if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
+        return this;
+      }
+
+      var child = new this.constructor(lib$es6$promise$$internal$$noop);
+      var result = parent._result;
+
+      if (state) {
+        var callback = arguments[state - 1];
+        lib$es6$promise$asap$$asap(function(){
+          lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+        });
+      } else {
+        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+      }
+
+      return child;
+    }
+    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
+    function lib$es6$promise$promise$resolve$$resolve(object) {
+      /*jshint validthis:true */
+      var Constructor = this;
+
+      if (object && typeof object === 'object' && object.constructor === Constructor) {
+        return object;
+      }
+
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+      lib$es6$promise$$internal$$resolve(promise, object);
+      return promise;
+    }
+    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
 
     function lib$es6$promise$$internal$$noop() {}
 
@@ -1226,12 +1280,12 @@ process.umask = function() { return 0; };
       }
     }
 
-    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable) {
-      if (maybeThenable.constructor === promise.constructor) {
+    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
+      if (maybeThenable.constructor === promise.constructor &&
+          then === lib$es6$promise$then$$default &&
+          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
         lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
       } else {
-        var then = lib$es6$promise$$internal$$getThen(maybeThenable);
-
         if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
           lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
         } else if (then === undefined) {
@@ -1248,7 +1302,7 @@ process.umask = function() { return 0; };
       if (promise === value) {
         lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
       } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
-        lib$es6$promise$$internal$$handleMaybeThenable(promise, value);
+        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
       } else {
         lib$es6$promise$$internal$$fulfill(promise, value);
       }
@@ -1383,104 +1437,6 @@ process.umask = function() { return 0; };
       }
     }
 
-    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
-      var enumerator = this;
-
-      enumerator._instanceConstructor = Constructor;
-      enumerator.promise = new Constructor(lib$es6$promise$$internal$$noop);
-
-      if (enumerator._validateInput(input)) {
-        enumerator._input     = input;
-        enumerator.length     = input.length;
-        enumerator._remaining = input.length;
-
-        enumerator._init();
-
-        if (enumerator.length === 0) {
-          lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-        } else {
-          enumerator.length = enumerator.length || 0;
-          enumerator._enumerate();
-          if (enumerator._remaining === 0) {
-            lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-          }
-        }
-      } else {
-        lib$es6$promise$$internal$$reject(enumerator.promise, enumerator._validationError());
-      }
-    }
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validateInput = function(input) {
-      return lib$es6$promise$utils$$isArray(input);
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
-      return new Error('Array Methods must be provided an Array');
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._init = function() {
-      this._result = new Array(this.length);
-    };
-
-    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
-      var enumerator = this;
-
-      var length  = enumerator.length;
-      var promise = enumerator.promise;
-      var input   = enumerator._input;
-
-      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        enumerator._eachEntry(input[i], i);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
-      var enumerator = this;
-      var c = enumerator._instanceConstructor;
-
-      if (lib$es6$promise$utils$$isMaybeThenable(entry)) {
-        if (entry.constructor === c && entry._state !== lib$es6$promise$$internal$$PENDING) {
-          entry._onerror = null;
-          enumerator._settledAt(entry._state, i, entry._result);
-        } else {
-          enumerator._willSettleAt(c.resolve(entry), i);
-        }
-      } else {
-        enumerator._remaining--;
-        enumerator._result[i] = entry;
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
-      var enumerator = this;
-      var promise = enumerator.promise;
-
-      if (promise._state === lib$es6$promise$$internal$$PENDING) {
-        enumerator._remaining--;
-
-        if (state === lib$es6$promise$$internal$$REJECTED) {
-          lib$es6$promise$$internal$$reject(promise, value);
-        } else {
-          enumerator._result[i] = value;
-        }
-      }
-
-      if (enumerator._remaining === 0) {
-        lib$es6$promise$$internal$$fulfill(promise, enumerator._result);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
-      var enumerator = this;
-
-      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
-        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
-      }, function(reason) {
-        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
-      });
-    };
     function lib$es6$promise$promise$all$$all(entries) {
       return new lib$es6$promise$enumerator$$default(this, entries).promise;
     }
@@ -1513,19 +1469,6 @@ process.umask = function() { return 0; };
       return promise;
     }
     var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
-    function lib$es6$promise$promise$resolve$$resolve(object) {
-      /*jshint validthis:true */
-      var Constructor = this;
-
-      if (object && typeof object === 'object' && object.constructor === Constructor) {
-        return object;
-      }
-
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-      lib$es6$promise$$internal$$resolve(promise, object);
-      return promise;
-    }
-    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
     function lib$es6$promise$promise$reject$$reject(reason) {
       /*jshint validthis:true */
       var Constructor = this;
@@ -1656,15 +1599,8 @@ process.umask = function() { return 0; };
       this._subscribers = [];
 
       if (lib$es6$promise$$internal$$noop !== resolver) {
-        if (!lib$es6$promise$utils$$isFunction(resolver)) {
-          lib$es6$promise$promise$$needsResolver();
-        }
-
-        if (!(this instanceof lib$es6$promise$promise$$Promise)) {
-          lib$es6$promise$promise$$needsNew();
-        }
-
-        lib$es6$promise$$internal$$initializePromise(this, resolver);
+        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
+        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
       }
     }
 
@@ -1872,28 +1808,7 @@ process.umask = function() { return 0; };
       Useful for tooling.
       @return {Promise}
     */
-      then: function(onFulfillment, onRejection) {
-        var parent = this;
-        var state = parent._state;
-
-        if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
-          return this;
-        }
-
-        var child = new this.constructor(lib$es6$promise$$internal$$noop);
-        var result = parent._result;
-
-        if (state) {
-          var callback = arguments[state - 1];
-          lib$es6$promise$asap$$asap(function(){
-            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
-          });
-        } else {
-          lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
-        }
-
-        return child;
-      },
+      then: lib$es6$promise$then$$default,
 
     /**
       `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
@@ -1925,6 +1840,97 @@ process.umask = function() { return 0; };
       'catch': function(onRejection) {
         return this.then(null, onRejection);
       }
+    };
+    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+      this._instanceConstructor = Constructor;
+      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+      if (Array.isArray(input)) {
+        this._input     = input;
+        this.length     = input.length;
+        this._remaining = input.length;
+
+        this._result = new Array(this.length);
+
+        if (this.length === 0) {
+          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+        } else {
+          this.length = this.length || 0;
+          this._enumerate();
+          if (this._remaining === 0) {
+            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+          }
+        }
+      } else {
+        lib$es6$promise$$internal$$reject(this.promise, this._validationError());
+      }
+    }
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
+      return new Error('Array Methods must be provided an Array');
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+      var length  = this.length;
+      var input   = this._input;
+
+      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+        this._eachEntry(input[i], i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+      var c = this._instanceConstructor;
+      var resolve = c.resolve;
+
+      if (resolve === lib$es6$promise$promise$resolve$$default) {
+        var then = lib$es6$promise$$internal$$getThen(entry);
+
+        if (then === lib$es6$promise$then$$default &&
+            entry._state !== lib$es6$promise$$internal$$PENDING) {
+          this._settledAt(entry._state, i, entry._result);
+        } else if (typeof then !== 'function') {
+          this._remaining--;
+          this._result[i] = entry;
+        } else if (c === lib$es6$promise$promise$$default) {
+          var promise = new c(lib$es6$promise$$internal$$noop);
+          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
+          this._willSettleAt(promise, i);
+        } else {
+          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
+        }
+      } else {
+        this._willSettleAt(resolve(entry), i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+      var promise = this.promise;
+
+      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+        this._remaining--;
+
+        if (state === lib$es6$promise$$internal$$REJECTED) {
+          lib$es6$promise$$internal$$reject(promise, value);
+        } else {
+          this._result[i] = value;
+        }
+      }
+
+      if (this._remaining === 0) {
+        lib$es6$promise$$internal$$fulfill(promise, this._result);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+      var enumerator = this;
+
+      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+      }, function(reason) {
+        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+      });
     };
     function lib$es6$promise$polyfill$$polyfill() {
       var local;

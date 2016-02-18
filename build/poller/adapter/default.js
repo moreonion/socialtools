@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Default = factory();
+    root.defaultAdapter = factory();
   }
 }(this, function() {
 /**

@@ -15,6 +15,7 @@
  *
  * Currently IE9+, Edge, Chrome, Firefox and Safari are supported.
  *
+ * @module socialtools-full-legacy
  * @requires es6-promise
  * @requires ./polyfills/object/assign
  * @requires ./polyfills/element/remove
