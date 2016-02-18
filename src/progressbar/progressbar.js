@@ -6,7 +6,7 @@
  * @requires ../common/utils
  */
 
-/* global module:true assignPolyfill utils Poller */
+/* global module:true assignPolyfill utils Poller:true */
 
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
