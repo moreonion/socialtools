@@ -67,6 +67,7 @@ function Progressbar(options) {
      * @inner
      */
     var defaults = {
+        startCount: 0,
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
         poller: null,
@@ -121,6 +122,10 @@ function Progressbar(options) {
 
     if (this.settings.el) {
         this.bindTo(this.settings.el);
+    }
+
+    if (this.settings.startCount !== 0) {
+        this.currentCount = utils.toInteger(this.settings.startCount);
     }
 }
 

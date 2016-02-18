@@ -20,6 +20,20 @@ describe('Progressbar', function () {
         });
     });
 
+    describe('initialization', function () {
+        it('is initialized with a start count of 0', function () {
+            var progressbar = new Progressbar();
+            assert.equal(0, progressbar.currentCount);
+        });
+
+        it('can be initialized with a specific start count', function () {
+            var progressbar = new Progressbar({
+                startCount: 110
+            });
+            assert.equal(110, progressbar.currentCount);
+        });
+    });
+
     describe('usage of Poller', function () {
         it('should be optional', function () {
             var progressbar = new Progressbar();
