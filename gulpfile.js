@@ -26,7 +26,7 @@ function baseName(str) {
 /*            DISTRIBUTE                                                   */
 /* ======================================================================= */
 
-gulp.task('js-modern', function () {
+gulp.task('js-modern', [ 'socialtools-full-modern' ], function () {
     var b = browserify({
         entries: [ './build/socialtools-full-modern.js' ]
     });
@@ -39,7 +39,7 @@ gulp.task('js-modern', function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('js-legacy', function () {
+gulp.task('js-legacy', [ 'socialtools-full-legacy' ], function () {
     var b = browserify({
         entries: [ './build/socialtools-full-legacy.js' ]
     });
