@@ -1,11 +1,11 @@
-/* global require describe it beforeEach global */
+/* global require describe it beforeEach before after */
 
 var chai = require('chai');
 var assert = chai.assert;
 var Progressbar = require('../build/progressbar/progressbar');
 var Poller = require('../build/poller/poller');
 
-var jsdom = require('mocha-jsdom');
+var jsdom = require('jsdom-global');
 
 describe('Progressbar', function () {
     describe('constructor', function () {
@@ -184,7 +184,13 @@ describe('Progressbar', function () {
     });
 
     describe('binding of element', function () {
-        jsdom();
+        before(function () {
+            this.jsdom = jsdom();
+        });
+
+        after(function () {
+            this.jsdom(); // cleanup
+        });
 
         beforeEach(function () {
             this.progressbar = new Progressbar();
@@ -198,12 +204,12 @@ describe('Progressbar', function () {
         });
 
         it('should return `false` if failed', function () {
-            var returnValue = this.progressbar.bindTo('#non-existing', global.document);
+            var returnValue = this.progressbar.bindTo('#non-existing', document);
             assert.equal(false, returnValue);
         });
 
         it('can bind to any given HTMLElement', function () {
-            var el = global.document.createElement('div');
+            var el = document.createElement('div');
             var returnValue = this.progressbar.bindTo(el);
             assert.equal(true, returnValue);
             assert.equal(el, this.progressbar.el);
@@ -218,7 +224,7 @@ describe('Progressbar', function () {
         });
 
         it('can bind via an option of the constructor', function () {
-            var el = global.document.createElement('div');
+            var el = document.createElement('div');
             var progressbar = new Progressbar({ el: el });
             assert.equal(el, progressbar.el);
         });
@@ -245,7 +251,13 @@ describe('Progressbar', function () {
     });
 
     describe('updating of container', function () {
-        jsdom();
+        before(function () {
+            this.jsdom = jsdom();
+        });
+
+        after(function () {
+            this.jsdom(); // cleanup
+        });
 
         it('should update a container counter', function () {
             var container = document.createElement('div');

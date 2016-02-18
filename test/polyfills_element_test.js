@@ -1,16 +1,22 @@
-/* global require describe it beforeEach global */
+/* global require describe it before after */
 
 var chai = require('chai');
 var assert = chai.assert;
 var polyfill = require('../build/polyfills/element/remove');
 
-var jsdom = require('mocha-jsdom');
+var jsdom = require('jsdom-global');
 
 describe('polyfills', function () {
     describe('Element', function () {
-        jsdom();
-
         describe('remove()', function () {
+            before(function () {
+                this.jsdom = jsdom();
+            });
+
+            after(function () {
+                this.jsdom(); // cleanup
+            });
+
             it('should polyfill with a remove() method', function () {
                 assert.ok(typeof window.Element.prototype.remove === 'undefined');
                 polyfill.polyfill();
