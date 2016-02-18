@@ -1,10 +1,10 @@
-/* global require describe it beforeEach global */
+/* global require describe it beforeEach global before after */
 
 var chai = require('chai');
 var assert = chai.assert;
 var utils = require('../build/common/utils');
 
-var jsdom = require('mocha-jsdom');
+var jsdom = require('jsdom-global');
 
 describe('utils', function () {
     describe('toInteger()', function () {
@@ -44,7 +44,13 @@ describe('utils', function () {
     });
 
     describe('addQueryParams()', function () {
-        jsdom();
+        before(function () {
+            this.jsdom = jsdom();
+        });
+
+        after(function () {
+            this.jsdom(); // cleanup
+        });
 
         it('should return undefined when called without url', function () {
             assert.equal(undefined, utils.addQueryParams());
