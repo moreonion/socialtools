@@ -27,7 +27,7 @@
     "build": "npm run build-js",
     "mocha": "mocha --reporter spec",
     "test": "istanbul cover _mocha",
-    "lint": "eslint ./src/{,**/}*.js ./test/{,**/}*.js",
+    "lint": "eslint ./src/{,**/}*.js ./test/{,**/}*.js ./gulpfile.js",
     "doc": "jsdoc --private -r ./src/ -c ./.jsdoc.conf.json"
   },
   "dependencies": {},
