@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Assign = factory();
+    root.assignPolyfill = factory();
   }
 }(this, function() {
 /**

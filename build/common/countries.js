@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Countries = factory();
+    root.countries = factory();
   }
 }(this, function() {
 /**

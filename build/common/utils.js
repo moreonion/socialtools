@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Utils = factory();
+    root.utils = factory();
   }
 }(this, function() {
 /**

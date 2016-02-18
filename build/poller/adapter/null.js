@@ -4,7 +4,7 @@
   } else if (typeof exports === 'object') {
     module.exports = factory();
   } else {
-    root.Null = factory();
+    root.nullAdapter = factory();
   }
 }(this, function() {
 /**
