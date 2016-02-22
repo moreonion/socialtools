@@ -234,9 +234,7 @@ Poller.prototype._poll = function (url) {
     this[pollCallbackName](url).then(function (response) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
-        if ('console' in window) {
-            console.log('Error: ' + error.message); // eslint-disable-line no-console
-        }
+        throw new Error('Poller: Error: ' + error.message);
     });
 };
 
