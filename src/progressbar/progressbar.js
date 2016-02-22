@@ -51,6 +51,9 @@ if (typeof Poller === 'undefined') {
  *     [constructor options of Poller]{@link module:poller/poller~Poller}.
  * @param {string} [options.barSelector='.bar'] - the HTML class selector which
  *     selects the growing bar
+ * @param {string} [options.barStyleAttr='width'] - the style attribute of the
+ *     selected bar which get's the percentage applied (usually you will want
+ *     to choose between <code>width</code> and <code>height</code>
  * @param {string} [options.counterSelector='.counter'] - the HTML class
  *     selector which selects counters
  * @param {string} [options.downCounterSelector='.down-counter'] - the HTML
@@ -74,6 +77,7 @@ function Progressbar(options) {
         minDelta: 0,
         poller: null,
         barSelector: '.bar',
+        barStyleAttr: 'width',
         counterSelector: '.counter',
         downCounterSelector: '.down-counter',
         el: null
@@ -201,7 +205,7 @@ Progressbar.prototype.render = function () {
     if (this.el) {
         var bar = this.el.querySelector(this.settings.barSelector);
         if (bar) {
-            bar.style.width = this.percentageDone(true) + '%';
+            bar.style[this.settings.barStyleAttr] = this.percentageDone(true) + '%';
         }
 
         var counter = this.el.querySelector(this.settings.counterSelector);
