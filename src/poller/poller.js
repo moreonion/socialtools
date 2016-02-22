@@ -137,10 +137,12 @@ Poller.prototype.getJSON = function (url) {
  * @param {string} url - The URL to get.
  * @returns {Promise}
  * @todo possible to inject other document
- * @todo possible to inject other global scope (window)
  * @todo when to reject Promises
  */
-Poller.prototype.getJSONP = function (url) {
+Poller.prototype.getJSONP = function (url, global) {
+    if (typeof global === 'undefined') {
+        global = root;
+    }
     // coerce callbackNamePrefix into a string
     var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
     var randomPart = '';
@@ -154,7 +156,7 @@ Poller.prototype.getJSONP = function (url) {
     }
 
     // try as long as we hit an unset identifier to use
-    while (typeof root[callbackName] !== 'undefined') {
+    while (typeof global[callbackName] !== 'undefined') {
         var r = Math.floor(Math.random() * Date.now());
         randomPart = r.toString(36);
         callbackName = callbackNamePrefix + '_' + randomPart;
@@ -165,9 +167,9 @@ Poller.prototype.getJSONP = function (url) {
         var requestUrl = utils.addQueryParams(url, {
             callback: callbackName
         });
-        root[callbackName] = function (data) {
+        global[callbackName] = function (data) {
             // cleans itself when called
-            delete root[callbackName];
+            delete global[callbackName];
             scriptEl.remove();
             resolve(data);
         };
