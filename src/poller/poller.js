@@ -12,6 +12,8 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
 
+var root = this; // eslint-disable-line consistent-this
+
 /**
  * Creates a Poller instance.
  *
@@ -84,7 +86,7 @@ Poller.prototype.get = function (url) {
         // for IE9 (only with XDomainRequest)
         if ('withCredentials' in req) {
             req.open('GET', url, true);
-        } else if ('XDomainRequest' in window) {
+        } else if ('XDomainRequest' in root) {
             req = new XDomainRequest();
             req.open('get', url);
         } else {
@@ -152,7 +154,7 @@ Poller.prototype.getJSONP = function (url) {
     }
 
     // try as long as we hit an unset identifier to use
-    while (typeof window[callbackName] !== 'undefined') {
+    while (typeof root[callbackName] !== 'undefined') {
         var r = Math.floor(Math.random() * Date.now());
         randomPart = r.toString(36);
         callbackName = callbackNamePrefix + '_' + randomPart;
@@ -163,9 +165,9 @@ Poller.prototype.getJSONP = function (url) {
         var requestUrl = utils.addQueryParams(url, {
             callback: callbackName
         });
-        window[callbackName] = function (data) {
+        root[callbackName] = function (data) {
             // cleans itself when called
-            delete window[callbackName];
+            delete root[callbackName];
             scriptEl.remove();
             resolve(data);
         };

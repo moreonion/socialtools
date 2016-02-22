@@ -12,6 +12,8 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
 
+var root = this; // eslint-disable-line consistent-this
+
 /** Poller is a "soft" dependency
  *
  * If it is not defined we generate one adhoc of Progressbar
@@ -139,7 +141,7 @@ function Progressbar(options) {
  * @method
  * @param {HTMLElement|string} el - the DOM Element or an
  *     querySelector representing it
- * @param {Document|DocumentFragment} [document=window.document] - the Document
+ * @param {Document|DocumentFragment} [document=root.document] - the Document
  *     or DocumentFragment to operate on.
  * @todo HTMLCollection
  * @returns {boolean}
@@ -147,7 +149,7 @@ function Progressbar(options) {
 Progressbar.prototype.bindTo = function (el, doc) {
     // default document
     if (typeof doc === 'undefined') {
-        doc = window.document;
+        doc = root.document;
     }
 
     if (typeof el === 'string') {
