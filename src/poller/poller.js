@@ -25,6 +25,8 @@ module.exports = Poller;
  *     milliseconds
  * @param {function} [options.adapter=DefaultAdapterFn] - the function which
  *     adapts the response
+ * @param {function} [options.createEvent=true] - whether the poller should
+ *     create an event
  * @param {function} [options.handler] - a handler which will get called with
  *     every successful poll
  * @public
@@ -44,6 +46,7 @@ function Poller(options) {
         type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
+        createEvent: true,
         eventName: 'polled',
         callbackNamePrefixJSONP: 'pollerJSONPCallback',
         handler: null
@@ -189,19 +192,21 @@ Poller.prototype._handleResponse = function (data) {
     // we need to build the CustomEvent without the CustomEvent() constructor for
     // browser compatibility (IE9)
 
-    /**
-     * polled Event.
-     *
-     * @event module:poller/poller~Poller#polled
-     * @type {CustomEvent}
-     * @param {object} details - the details of the CustomEvent
-     * @param {object} details.data - the data of the response from the poll
-     * @todo namespace event
-     * @todo attach event to poller instance
-     */
-    var event = document.createEvent('CustomEvent');
-    event.initCustomEvent(this.settings.eventName, true, true, { data: data });
-    document.dispatchEvent(event);
+    if (this.settings.createEvent) {
+        /**
+         * polled Event.
+         *
+         * @event module:poller/poller~Poller#polled
+         * @type {CustomEvent}
+         * @param {object} details - the details of the CustomEvent
+         * @param {object} details.data - the data of the response from the poll
+         * @todo namespace event
+         * @todo attach event to poller instance
+         */
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(this.settings.eventName, true, true, { data: data });
+        document.dispatchEvent(event);
+    }
 
     // call handler if exists
     if (typeof this.settings.handler === 'function') {
