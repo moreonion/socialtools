@@ -243,8 +243,8 @@ Poller.prototype._poll = function (url) {
 /**
  * Start and stop the poller.
  *
- * The action can be <code>start</code> (default), <code>stop</code> or
- * <code>reset</code>.
+ * The action can be <code>once</code>, <code>start</code> (default),
+ * <code>stop</code> or <code>reset</code>.
  *
  * @public
  * @method
@@ -261,8 +261,9 @@ Poller.prototype.poll = function (action) {
         this.interval = setInterval(function () {
             self._poll.call(self, self.settings.url);
         }, this.settings.pollInterval);
-    }
-    if (action === 'stop') {
+    } else if (action === 'once') {
+        this._poll.call(this, this.settings.url);
+    } else if (action === 'stop') {
         clearInterval(this.interval);
     }
 };
