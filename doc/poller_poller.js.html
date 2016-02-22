@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: poller/poller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: poller/poller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Poller module.
+ *
+ * @module poller/poller
+ * @requires ../common/utils
+ * @requires ./adapter/default
+ */
+
+/* global Promise module:true promisePolyfill assignPolyfill removePolyfill utils DefaultAdapterFn */
+
+module = (typeof module === 'undefined') ? {} : module;
+/** Create a poller */
+module.exports = Poller;
+
+/**
+ * Creates a Poller instance.
+ *
+ * @constructor
+ * @this {Poller}
+ * @param {object} options - the options
+ * @param {string} options.url - the URL to poll
+ * @param {string} [options.type='json'] - the type of the request, may be
+ *     &lt;code>json&lt;/code> or &lt;code>jsonp&lt;/code>
+ * @param {number} [options.pollInterval=10000] - the time between polls in
+ *     milliseconds
+ * @param {function} [options.adapter=DefaultAdapterFn] - the function which
+ *     adapts the response
+ * @param {function} [options.handler] - a handler which will get called with
+ *     every successful poll
+ * @public
+ * @todo validate options, throw Error on invalid options
+ */
+function Poller(options) {
+    // make it possible to use `Poller()` and `new Poller`
+    if (!(this instanceof Poller)) return new Poller(options);
+
+    /**
+     * The default settings.
+     * @var {object}
+     * @inner
+     */
+    var defaults = {
+        url: null,
+        type: 'json',
+        pollInterval: 10000,
+        adapter: DefaultAdapterFn,
+        eventName: 'polled',
+        callbackNamePrefixJSONP: 'pollerJSONPCallback',
+        handler: null
+    };
+
+    /**
+     * The active settings.
+     * @member {object} settings
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
+    this.settings = Object.assign(defaults, options);
+
+    /**
+     * The interval of the poller instance.
+     * @member {object} interval
+     * @instance
+     * @memberof module:poller/poller~Poller
+     */
+    this.interval = null;
+}
+
+/**
+ * Get an URL via XHR.
+ *
+ * @method
+ * @param {string} url - The URL to get.
+ * @returns {Promise}
+ */
+Poller.prototype.get = function (url) {
+    return new Promise(function (resolve, reject) {
+        var req = new XMLHttpRequest();
+        // @BROWSER: IE9
+        // check for XHR2 and CORS and therefor also for .onload/.onerror callbacks
+        // for IE9 (only with XDomainRequest)
+        if ('withCredentials' in req) {
+            req.open('GET', url, true);
+        } else if ('XDomainRequest' in window) {
+            req = new XDomainRequest();
+            req.open('get', url);
+        } else {
+            reject(new Error('CORS not supported'));
+        }
+
+        req.onload = function () {
+            if (req.readyState === XMLHttpRequest.DONE) {
+                if (req.status === 200) {
+                    resolve(req.response);
+                }
+                else {
+                    reject(new Error(req.status + ' ' + req.statusText));
+                }
+            }
+        };
+
+        req.onerror = function () {
+            reject(new Error('Network error'));
+        };
+
+        req.send();
+    });
+};
+
+/**
+ * Get an URL via XHR and parse the result as JSON.
+ *
+ * This method conveniently wraps {@link Poller#get} with a call to
+ * &lt;code>JSON.parse&lt;/code>
+ *
+ * @method
+ * @param {string} url - The URL to get.
+ * @returns {Promise}
+ */
+Poller.prototype.getJSON = function (url) {
+    // transform via JSON.parse resolve callback
+    return this.get(url).then(JSON.parse);
+};
+
+/**
+ * Get an URL via JSONP and parse the result as JSON.
+ *
+ * This method conveniently wraps {@link Poller#get} with a call to
+ * &lt;code>JSON.parse&lt;/code>
+ *
+ * @method
+ * @param {string} url - The URL to get.
+ * @returns {Promise}
+ * @todo possible to inject other document
+ * @todo possible to inject other global scope (window)
+ * @todo when to reject Promises
+ */
+Poller.prototype.getJSONP = function (url) {
+    // coerce callbackNamePrefix into a string
+    var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
+    var randomPart = '';
+    var callbackName = callbackNamePrefix + randomPart;
+
+    // try if prefix is of length 0 or
+    if (callbackNamePrefix.length === 0) {
+        var q = Math.floor(Math.random() * Date.now());
+        randomPart = q.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
+    }
+
+    // try as long as we hit an unset identifier to use
+    while (typeof window[callbackName] !== 'undefined') {
+        var r = Math.floor(Math.random() * Date.now());
+        randomPart = r.toString(36);
+        callbackName = callbackNamePrefix + '_' + randomPart;
+    }
+
+    return new Promise(function (resolve) {
+        var scriptEl = document.createElement('script');
+        var requestUrl = utils.addQueryParams(url, {
+            callback: callbackName
+        });
+        window[callbackName] = function (data) {
+            // cleans itself when called
+            delete window[callbackName];
+            scriptEl.remove();
+            resolve(data);
+        };
+        scriptEl.setAttribute('src', requestUrl);
+        document.body.appendChild(scriptEl);
+    });
+};
+
+/**
+ * Handle the response.
+ *
+ * Handle the response by emitting an event and calling an optional callback.
+ * The handler is called whith &lt;code>this&lt;/code> set to the Poller instance and
+ * the polled data provided as argument.
+ *
+ * @protected
+ * @method
+ * @param {object} data - the data which was polled
+ * @fires module:poller/poller~Poller#polled
+ */
+Poller.prototype._handleResponse = function (data) {
+    // trigger event
+    // @BROWSER: IE9
+    // we need to build the CustomEvent without the CustomEvent() constructor for
+    // browser compatibility (IE9)
+
+    /**
+     * polled Event.
+     *
+     * @event module:poller/poller~Poller#polled
+     * @type {CustomEvent}
+     * @param {object} details - the details of the CustomEvent
+     * @param {object} details.data - the data of the response from the poll
+     * @todo namespace event
+     * @todo attach event to poller instance
+     */
+    var event = document.createEvent('CustomEvent');
+    event.initCustomEvent(this.settings.eventName, true, true, { data: data });
+    document.dispatchEvent(event);
+
+    // call handler if exists
+    if (typeof this.settings.handler === 'function') {
+        this.settings.handler.call(this, data);
+    }
+};
+
+/**
+ * Get JSON response and resolve the Promise.
+ *
+ * @protected
+ * @method
+ * @param {string} url - the URL to poll
+ */
+Poller.prototype._poll = function (url) {
+    // transform via JSON.parse resolve callback
+    var self = this;
+    var pollCallbackName;
+    if (this.settings.type === 'json') {
+        pollCallbackName = 'getJSON';
+    } else if (this.settings.type === 'jsonp') {
+        pollCallbackName = 'getJSONP';
+    }
+
+    this[pollCallbackName](url).then(function (response) {
+        self._handleResponse(self.settings.adapter.call(self, response));
+    }, function (error) {
+        if ('console' in window) {
+            console.log('Error: ' + error.message); // eslint-disable-line no-console
+        }
+    });
+};
+
+/**
+ * Start and stop the poller.
+ *
+ * The action can be &lt;code>start&lt;/code> (default), &lt;code>stop&lt;/code> or
+ * &lt;code>reset&lt;/code>.
+ *
+ * @public
+ * @method
+ * @param {string} [action=start] - The desired action
+ */
+Poller.prototype.poll = function (action) {
+    if (typeof action === 'undefined' || action === 'start' || action === 'reset') {
+        clearInterval(this.interval); // we want only one interval per poller
+
+        // immediately do the first poll
+        this._poll.call(this, this.settings.url);
+
+        var self = this;
+        this.interval = setInterval(function () {
+            self._poll.call(self, self.settings.url);
+        }, this.settings.pollInterval);
+    }
+    if (action === 'stop') {
+        clearInterval(this.interval);
+    }
+};
+
+// vim: set et ts=4 sw=4 :
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-common_countries.html">common/countries</a></li><li><a href="module-common_utils.html">common/utils</a></li><li><a href="module-poller_adapter_default.html">poller/adapter/default</a></li><li><a href="module-poller_adapter_null.html">poller/adapter/null</a></li><li><a href="module-poller_poller.html">poller/poller</a></li><li><a href="module-polyfills_element_remove.html">polyfills/element/remove</a></li><li><a href="module-polyfills_object_assign.html">polyfills/object/assign</a></li><li><a href="module-progressbar_progressbar.html">progressbar/progressbar</a></li><li><a href="module-socialtools-full-legacy.html">socialtools-full-legacy</a></li><li><a href="module-socialtools-full-modern.html">socialtools-full-modern</a></li></ul><h3>Classes</h3><ul><li><a href="module-poller_adapter_default-DefaultAdapterFn.html">DefaultAdapterFn</a></li><li><a href="module-poller_adapter_null-NullAdapterFn.html">NullAdapterFn</a></li><li><a href="module-poller_poller-Poller.html">Poller</a></li><li><a href="module-progressbar_progressbar-Progressbar.html">Progressbar</a></li></ul><h3>Events</h3><ul><li><a href="module-poller_poller-Poller.html#event:polled">polled</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 18 2016 16:24:39 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
