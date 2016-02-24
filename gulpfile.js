@@ -8,6 +8,8 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var umd = require('gulp-umd');
 
+var namespace = 'Socialtools';
+
 /**
  * As vinyl in gulp is not up-to-date yet, we cannot utilized file.stem for now.
  * This is a helper function for that.
@@ -28,7 +30,8 @@ function baseName(str) {
 
 gulp.task('js-modern', [ 'socialtools-full-modern' ], function () {
     var b = browserify({
-        entries: [ './build/umd/socialtools-full-modern.js' ]
+        entries: [ './build/umd/socialtools-full-modern.js' ],
+        standalone: namespace
     });
     return b.bundle()
         .pipe(source('socialtools-full-modern.js'))
@@ -41,7 +44,8 @@ gulp.task('js-modern', [ 'socialtools-full-modern' ], function () {
 
 gulp.task('js-legacy', [ 'socialtools-full-legacy' ], function () {
     var b = browserify({
-        entries: [ './build/umd/socialtools-full-legacy.js' ]
+        entries: [ './build/umd/socialtools-full-legacy.js' ],
+        standalone: namespace
     });
     return b.bundle()
         .pipe(source('socialtools-full-legacy.js'))
@@ -173,7 +177,7 @@ gulp.task('socialtools-full-modern', function () {
     return gulp.src('src/socialtools-full-modern.js')
       .pipe(umd({
           namespace: function () {
-              return 'Socialtools';
+              return namespace;
           },
           exports: function () {
               return 'module.exports';
@@ -211,7 +215,7 @@ gulp.task('socialtools-full-legacy', function () {
     return gulp.src('src/socialtools-full-legacy.js')
       .pipe(umd({
           namespace: function () {
-              return 'Socialtools';
+              return namespace;
           },
           exports: function () {
               return 'module.exports';
