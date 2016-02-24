@@ -21,6 +21,8 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
 
+var root = this; // eslint-disable-line consistent-this
+
 /** Poller is a "soft" dependency
  *
  * If it is not defined we generate one adhoc of Progressbar
@@ -58,6 +60,9 @@ if (typeof Poller === 'undefined') {
  *     [constructor options of Poller]{@link module:poller/poller~Poller}.
  * @param {string} [options.barSelector='.bar'] - the HTML class selector which
  *     selects the growing bar
+ * @param {string} [options.barStyleAttr='width'] - the style attribute of the
+ *     selected bar which get's the percentage applied (usually you will want
+ *     to choose between <code>width</code> and <code>height</code>
  * @param {string} [options.counterSelector='.counter'] - the HTML class
  *     selector which selects counters
  * @param {string} [options.downCounterSelector='.down-counter'] - the HTML
@@ -76,10 +81,12 @@ function Progressbar(options) {
      * @inner
      */
     var defaults = {
+        startCount: 0,
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
         poller: null,
         barSelector: '.bar',
+        barStyleAttr: 'width',
         counterSelector: '.counter',
         downCounterSelector: '.down-counter',
         el: null
@@ -131,6 +138,10 @@ function Progressbar(options) {
     if (this.settings.el) {
         this.bindTo(this.settings.el);
     }
+
+    if (this.settings.startCount !== 0) {
+        this.currentCount = utils.toInteger(this.settings.startCount);
+    }
 }
 
 
@@ -143,7 +154,7 @@ function Progressbar(options) {
  * @method
  * @param {HTMLElement|string} el - the DOM Element or an
  *     querySelector representing it
- * @param {Document|DocumentFragment} [document=window.document] - the Document
+ * @param {Document|DocumentFragment} [document=root.document] - the Document
  *     or DocumentFragment to operate on.
  * @todo HTMLCollection
  * @returns {boolean}
@@ -151,7 +162,7 @@ function Progressbar(options) {
 Progressbar.prototype.bindTo = function (el, doc) {
     // default document
     if (typeof doc === 'undefined') {
-        doc = window.document;
+        doc = root.document;
     }
 
     if (typeof el === 'string') {
@@ -203,7 +214,7 @@ Progressbar.prototype.render = function () {
     if (this.el) {
         var bar = this.el.querySelector(this.settings.barSelector);
         if (bar) {
-            bar.style.width = this.percentageDone(true) + '%';
+            bar.style[this.settings.barStyleAttr] = this.percentageDone(true) + '%';
         }
 
         var counter = this.el.querySelector(this.settings.counterSelector);

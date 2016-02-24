@@ -21,6 +21,8 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
 
+var root = this; // eslint-disable-line consistent-this
+
 /**
  * Creates a Poller instance.
  *
@@ -34,6 +36,8 @@ module.exports = Poller;
  *     milliseconds
  * @param {function} [options.adapter=DefaultAdapterFn] - the function which
  *     adapts the response
+ * @param {function} [options.createEvent=true] - whether the poller should
+ *     create an event
  * @param {function} [options.handler] - a handler which will get called with
  *     every successful poll
  * @public
@@ -53,6 +57,7 @@ function Poller(options) {
         type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
+        createEvent: true,
         eventName: 'polled',
         callbackNamePrefixJSONP: 'pollerJSONPCallback',
         handler: null
@@ -90,7 +95,7 @@ Poller.prototype.get = function (url) {
         // for IE9 (only with XDomainRequest)
         if ('withCredentials' in req) {
             req.open('GET', url, true);
-        } else if ('XDomainRequest' in window) {
+        } else if ('XDomainRequest' in root) {
             req = new XDomainRequest();
             req.open('get', url);
         } else {
@@ -141,10 +146,12 @@ Poller.prototype.getJSON = function (url) {
  * @param {string} url - The URL to get.
  * @returns {Promise}
  * @todo possible to inject other document
- * @todo possible to inject other global scope (window)
  * @todo when to reject Promises
  */
-Poller.prototype.getJSONP = function (url) {
+Poller.prototype.getJSONP = function (url, global) {
+    if (typeof global === 'undefined') {
+        global = root;
+    }
     // coerce callbackNamePrefix into a string
     var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
     var randomPart = '';
@@ -158,7 +165,7 @@ Poller.prototype.getJSONP = function (url) {
     }
 
     // try as long as we hit an unset identifier to use
-    while (typeof window[callbackName] !== 'undefined') {
+    while (typeof global[callbackName] !== 'undefined') {
         var r = Math.floor(Math.random() * Date.now());
         randomPart = r.toString(36);
         callbackName = callbackNamePrefix + '_' + randomPart;
@@ -169,9 +176,9 @@ Poller.prototype.getJSONP = function (url) {
         var requestUrl = utils.addQueryParams(url, {
             callback: callbackName
         });
-        window[callbackName] = function (data) {
+        global[callbackName] = function (data) {
             // cleans itself when called
-            delete window[callbackName];
+            delete global[callbackName];
             scriptEl.remove();
             resolve(data);
         };
@@ -198,19 +205,21 @@ Poller.prototype._handleResponse = function (data) {
     // we need to build the CustomEvent without the CustomEvent() constructor for
     // browser compatibility (IE9)
 
-    /**
-     * polled Event.
-     *
-     * @event module:poller/poller~Poller#polled
-     * @type {CustomEvent}
-     * @param {object} details - the details of the CustomEvent
-     * @param {object} details.data - the data of the response from the poll
-     * @todo namespace event
-     * @todo attach event to poller instance
-     */
-    var event = document.createEvent('CustomEvent');
-    event.initCustomEvent(this.settings.eventName, true, true, { data: data });
-    document.dispatchEvent(event);
+    if (this.settings.createEvent) {
+        /**
+         * polled Event.
+         *
+         * @event module:poller/poller~Poller#polled
+         * @type {CustomEvent}
+         * @param {object} details - the details of the CustomEvent
+         * @param {object} details.data - the data of the response from the poll
+         * @todo namespace event
+         * @todo attach event to poller instance
+         */
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(this.settings.eventName, true, true, { data: data });
+        document.dispatchEvent(event);
+    }
 
     // call handler if exists
     if (typeof this.settings.handler === 'function') {
@@ -238,17 +247,15 @@ Poller.prototype._poll = function (url) {
     this[pollCallbackName](url).then(function (response) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
-        if ('console' in window) {
-            console.log('Error: ' + error.message); // eslint-disable-line no-console
-        }
+        throw new Error('Poller: Error: ' + error.message);
     });
 };
 
 /**
  * Start and stop the poller.
  *
- * The action can be <code>start</code> (default), <code>stop</code> or
- * <code>reset</code>.
+ * The action can be <code>once</code>, <code>start</code> (default),
+ * <code>stop</code> or <code>reset</code>.
  *
  * @public
  * @method
@@ -265,8 +272,9 @@ Poller.prototype.poll = function (action) {
         this.interval = setInterval(function () {
             self._poll.call(self, self.settings.url);
         }, this.settings.pollInterval);
-    }
-    if (action === 'stop') {
+    } else if (action === 'once') {
+        this._poll.call(this, this.settings.url);
+    } else if (action === 'stop') {
         clearInterval(this.interval);
     }
 };

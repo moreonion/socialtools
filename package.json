@@ -1,6 +1,6 @@
 {
   "name": "mo-socialtools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Alex Berger <alex@more-onion.com>",
   "license": "MIT",
   "description": "A collection of social proof tools.",

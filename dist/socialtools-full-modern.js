@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Socialtools = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define([], factory);
@@ -193,6 +193,8 @@ module = (typeof module === 'undefined') ? {} : module;
 /** Create a poller */
 module.exports = Poller;
 
+var root = this; // eslint-disable-line consistent-this
+
 /**
  * Creates a Poller instance.
  *
@@ -206,6 +208,8 @@ module.exports = Poller;
  *     milliseconds
  * @param {function} [options.adapter=DefaultAdapterFn] - the function which
  *     adapts the response
+ * @param {function} [options.createEvent=true] - whether the poller should
+ *     create an event
  * @param {function} [options.handler] - a handler which will get called with
  *     every successful poll
  * @public
@@ -225,6 +229,7 @@ function Poller(options) {
         type: 'json',
         pollInterval: 10000,
         adapter: DefaultAdapterFn,
+        createEvent: true,
         eventName: 'polled',
         callbackNamePrefixJSONP: 'pollerJSONPCallback',
         handler: null
@@ -262,7 +267,7 @@ Poller.prototype.get = function (url) {
         // for IE9 (only with XDomainRequest)
         if ('withCredentials' in req) {
             req.open('GET', url, true);
-        } else if ('XDomainRequest' in window) {
+        } else if ('XDomainRequest' in root) {
             req = new XDomainRequest();
             req.open('get', url);
         } else {
@@ -313,10 +318,12 @@ Poller.prototype.getJSON = function (url) {
  * @param {string} url - The URL to get.
  * @returns {Promise}
  * @todo possible to inject other document
- * @todo possible to inject other global scope (window)
  * @todo when to reject Promises
  */
-Poller.prototype.getJSONP = function (url) {
+Poller.prototype.getJSONP = function (url, global) {
+    if (typeof global === 'undefined') {
+        global = root;
+    }
     // coerce callbackNamePrefix into a string
     var callbackNamePrefix = this.settings.callbackNamePrefixJSONP + '';
     var randomPart = '';
@@ -330,7 +337,7 @@ Poller.prototype.getJSONP = function (url) {
     }
 
     // try as long as we hit an unset identifier to use
-    while (typeof window[callbackName] !== 'undefined') {
+    while (typeof global[callbackName] !== 'undefined') {
         var r = Math.floor(Math.random() * Date.now());
         randomPart = r.toString(36);
         callbackName = callbackNamePrefix + '_' + randomPart;
@@ -341,9 +348,9 @@ Poller.prototype.getJSONP = function (url) {
         var requestUrl = utils.addQueryParams(url, {
             callback: callbackName
         });
-        window[callbackName] = function (data) {
+        global[callbackName] = function (data) {
             // cleans itself when called
-            delete window[callbackName];
+            delete global[callbackName];
             scriptEl.remove();
             resolve(data);
         };
@@ -370,19 +377,21 @@ Poller.prototype._handleResponse = function (data) {
     // we need to build the CustomEvent without the CustomEvent() constructor for
     // browser compatibility (IE9)
 
-    /**
-     * polled Event.
-     *
-     * @event module:poller/poller~Poller#polled
-     * @type {CustomEvent}
-     * @param {object} details - the details of the CustomEvent
-     * @param {object} details.data - the data of the response from the poll
-     * @todo namespace event
-     * @todo attach event to poller instance
-     */
-    var event = document.createEvent('CustomEvent');
-    event.initCustomEvent(this.settings.eventName, true, true, { data: data });
-    document.dispatchEvent(event);
+    if (this.settings.createEvent) {
+        /**
+         * polled Event.
+         *
+         * @event module:poller/poller~Poller#polled
+         * @type {CustomEvent}
+         * @param {object} details - the details of the CustomEvent
+         * @param {object} details.data - the data of the response from the poll
+         * @todo namespace event
+         * @todo attach event to poller instance
+         */
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(this.settings.eventName, true, true, { data: data });
+        document.dispatchEvent(event);
+    }
 
     // call handler if exists
     if (typeof this.settings.handler === 'function') {
@@ -410,17 +419,15 @@ Poller.prototype._poll = function (url) {
     this[pollCallbackName](url).then(function (response) {
         self._handleResponse(self.settings.adapter.call(self, response));
     }, function (error) {
-        if ('console' in window) {
-            console.log('Error: ' + error.message); // eslint-disable-line no-console
-        }
+        throw new Error('Poller: Error: ' + error.message);
     });
 };
 
 /**
  * Start and stop the poller.
  *
- * The action can be <code>start</code> (default), <code>stop</code> or
- * <code>reset</code>.
+ * The action can be <code>once</code>, <code>start</code> (default),
+ * <code>stop</code> or <code>reset</code>.
  *
  * @public
  * @method
@@ -437,8 +444,9 @@ Poller.prototype.poll = function (action) {
         this.interval = setInterval(function () {
             self._poll.call(self, self.settings.url);
         }, this.settings.pollInterval);
-    }
-    if (action === 'stop') {
+    } else if (action === 'once') {
+        this._poll.call(this, this.settings.url);
+    } else if (action === 'stop') {
         clearInterval(this.interval);
     }
 };
@@ -471,6 +479,8 @@ return module.exports;
 module = (typeof module === 'undefined') ? {} : module;
 /** Create a Progressbar */
 module.exports = Progressbar;
+
+var root = this; // eslint-disable-line consistent-this
 
 /** Poller is a "soft" dependency
  *
@@ -509,6 +519,9 @@ if (typeof Poller === 'undefined') {
  *     [constructor options of Poller]{@link module:poller/poller~Poller}.
  * @param {string} [options.barSelector='.bar'] - the HTML class selector which
  *     selects the growing bar
+ * @param {string} [options.barStyleAttr='width'] - the style attribute of the
+ *     selected bar which get's the percentage applied (usually you will want
+ *     to choose between <code>width</code> and <code>height</code>
  * @param {string} [options.counterSelector='.counter'] - the HTML class
  *     selector which selects counters
  * @param {string} [options.downCounterSelector='.down-counter'] - the HTML
@@ -527,10 +540,12 @@ function Progressbar(options) {
      * @inner
      */
     var defaults = {
+        startCount: 0,
         targets: [ 100, 1000, 10000 ],
         minDelta: 0,
         poller: null,
         barSelector: '.bar',
+        barStyleAttr: 'width',
         counterSelector: '.counter',
         downCounterSelector: '.down-counter',
         el: null
@@ -582,6 +597,10 @@ function Progressbar(options) {
     if (this.settings.el) {
         this.bindTo(this.settings.el);
     }
+
+    if (this.settings.startCount !== 0) {
+        this.currentCount = utils.toInteger(this.settings.startCount);
+    }
 }
 
 
@@ -594,7 +613,7 @@ function Progressbar(options) {
  * @method
  * @param {HTMLElement|string} el - the DOM Element or an
  *     querySelector representing it
- * @param {Document|DocumentFragment} [document=window.document] - the Document
+ * @param {Document|DocumentFragment} [document=root.document] - the Document
  *     or DocumentFragment to operate on.
  * @todo HTMLCollection
  * @returns {boolean}
@@ -602,7 +621,7 @@ function Progressbar(options) {
 Progressbar.prototype.bindTo = function (el, doc) {
     // default document
     if (typeof doc === 'undefined') {
-        doc = window.document;
+        doc = root.document;
     }
 
     if (typeof el === 'string') {
@@ -654,7 +673,7 @@ Progressbar.prototype.render = function () {
     if (this.el) {
         var bar = this.el.querySelector(this.settings.barSelector);
         if (bar) {
-            bar.style.width = this.percentageDone(true) + '%';
+            bar.style[this.settings.barStyleAttr] = this.percentageDone(true) + '%';
         }
 
         var counter = this.el.querySelector(this.settings.counterSelector);
@@ -813,4 +832,5 @@ module.exports = {
 return module.exports;
 }));
 
-},{"./common/utils":1,"./poller/poller":3,"./progressbar/progressbar":4}]},{},[5]);
+},{"./common/utils":1,"./poller/poller":3,"./progressbar/progressbar":4}]},{},[5])(5)
+});

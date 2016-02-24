@@ -14,7 +14,7 @@
  * @module polyfills/object/assign
  */
 
-/* global module:true window */
+/* global module:true */
 
 module = (typeof module === 'undefined') ? {} : module;
 module.exports = { polyfill: assign };
