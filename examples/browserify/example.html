@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browserify Example</title>
+</head>
+<body>
+  <h1>Browserify Example</h1>
+
+  <div id="example"><div class="bar"></div></div>
+
+  <script src="../../dist/socialtools-full-modern.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+var poller = new Socialtools.Poller({
+  url: "http://api.example.com/endpoint/1",
+  handler: function (e) {
+    console.log(e);
+  }
+});
+poller.poll('start');
+  </script>
+</body>
+</html>
