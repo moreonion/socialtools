@@ -2,8 +2,8 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var Progressbar = require('../build/progressbar/progressbar');
-var Poller = require('../build/poller/poller');
+var Progressbar = require('../build/umd/progressbar/progressbar');
+var Poller = require('../build/umd/poller/poller');
 
 var jsdom = require('jsdom-global');
 

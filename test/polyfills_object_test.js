@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var polyfill = require('../build/polyfills/object/assign');
+var polyfill = require('../build/umd/polyfills/object/assign');
 
 describe('polyfills', function () {
     describe('Object', function () {

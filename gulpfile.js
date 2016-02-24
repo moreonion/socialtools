@@ -28,7 +28,7 @@ function baseName(str) {
 
 gulp.task('js-modern', [ 'socialtools-full-modern' ], function () {
     var b = browserify({
-        entries: [ './build/socialtools-full-modern.js' ]
+        entries: [ './build/umd/socialtools-full-modern.js' ]
     });
     return b.bundle()
         .pipe(source('socialtools-full-modern.js'))
@@ -41,7 +41,7 @@ gulp.task('js-modern', [ 'socialtools-full-modern' ], function () {
 
 gulp.task('js-legacy', [ 'socialtools-full-legacy' ], function () {
     var b = browserify({
-        entries: [ './build/socialtools-full-legacy.js' ]
+        entries: [ './build/umd/socialtools-full-legacy.js' ]
     });
     return b.bundle()
         .pipe(source('socialtools-full-legacy.js'))
@@ -76,7 +76,7 @@ gulp.task('common', function () {
               return baseName(file.path);
           }
       }))
-      .pipe(gulp.dest('build/common/'));
+      .pipe(gulp.dest('build/umd/common/'));
 });
 
 gulp.task('polyfills', function () {
@@ -89,7 +89,7 @@ gulp.task('polyfills', function () {
               return baseName(file.path) + 'Polyfill';
           }
       }))
-      .pipe(gulp.dest('build/polyfills'));
+      .pipe(gulp.dest('build/umd/polyfills'));
 });
 
 gulp.task('poller/adapters', function () {
@@ -102,7 +102,7 @@ gulp.task('poller/adapters', function () {
               return baseName(file.path) + 'Adapter';
           }
       }))
-      .pipe(gulp.dest('build/poller/adapter/'));
+      .pipe(gulp.dest('build/umd/poller/adapter/'));
 });
 
 gulp.task('poller/poller', function () {
@@ -133,7 +133,7 @@ gulp.task('poller/poller', function () {
               ];
           }
       }))
-      .pipe(gulp.dest('build/poller/'));
+      .pipe(gulp.dest('build/umd/poller/'));
 });
 
 gulp.task('progressbar/progressbar', function () {
@@ -164,7 +164,7 @@ gulp.task('progressbar/progressbar', function () {
               ];
           }
       }))
-      .pipe(gulp.dest('build/progressbar/'));
+      .pipe(gulp.dest('build/umd/progressbar/'));
 });
 
 /* ---------- distribution ------------------------------------------------ */
@@ -204,7 +204,7 @@ gulp.task('socialtools-full-modern', function () {
               ];
           }
       }))
-      .pipe(gulp.dest('build/'));
+      .pipe(gulp.dest('build/umd'));
 });
 
 gulp.task('socialtools-full-legacy', function () {
@@ -263,7 +263,7 @@ gulp.task('socialtools-full-legacy', function () {
               ];
           }
       }))
-      .pipe(gulp.dest('build/'));
+      .pipe(gulp.dest('build/umd'));
 });
 
 /* ======================================================================= */

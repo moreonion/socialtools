@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var assert = chai.assert;
-var utils = require('../build/common/utils');
+var utils = require('../build/umd/common/utils');
 
 var jsdom = require('jsdom-global');
 

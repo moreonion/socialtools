@@ -3,7 +3,7 @@
 var chai = require('chai');
 var assert = chai.assert;
 var sinon = require('sinon');
-var Poller = require('../build/poller/poller');
+var Poller = require('../build/umd/poller/poller');
 
 describe('Poller', function () {
     describe('constructor', function () {
