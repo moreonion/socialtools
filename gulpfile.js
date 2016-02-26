@@ -171,6 +171,30 @@ gulp.task('progressbar/progressbar', function () {
       .pipe(gulp.dest('build/umd/progressbar/'));
 });
 
+gulp.task('supporters/supporters', function () {
+    return gulp.src('src/supporters/supporters.js')
+      .pipe(umd({
+          exports: function () {
+              return 'module.exports';
+          },
+          namespace: function () {
+              return 'Supporters';
+          },
+          dependencies: function () {
+              return [
+                  {
+                      name: 'Poller',
+                      amd: '../poller/poller',
+                      cjs: '../poller/poller',
+                      global: 'Poller',
+                      param: 'Poller'
+                  }
+              ];
+          }
+      }))
+      .pipe(gulp.dest('build/umd/supporters/'));
+});
+
 /* ---------- distribution ------------------------------------------------ */
 
 gulp.task('socialtools-full-modern', function () {
@@ -197,6 +221,13 @@ gulp.task('socialtools-full-modern', function () {
                       cjs: './progressbar/progressbar',
                       global: 'Progressbar',
                       param: 'Progressbar'
+                  },
+                  {
+                      name: 'Supporters',
+                      amd: './supporters/supporters',
+                      cjs: './supporters/supporters',
+                      global: 'Supporters',
+                      param: 'Supporters'
                   },
                   {
                       name: 'Poller',
@@ -258,6 +289,13 @@ gulp.task('socialtools-full-legacy', function () {
                       param: 'Progressbar'
                   },
                   {
+                      name: 'Supporters',
+                      amd: './supporters/supporters',
+                      cjs: './supporters/supporters',
+                      global: 'Supporters',
+                      param: 'Supporters'
+                  },
+                  {
                       name: 'Poller',
                       amd: './poller/poller',
                       cjs: './poller/poller',
@@ -280,6 +318,7 @@ gulp.task('umd', [
     'poller/adapters',
     'poller/poller',
     'progressbar/progressbar',
+    'supporters/supporters',
     'socialtools-full-legacy',
     'socialtools-full-modern'
 ]);
