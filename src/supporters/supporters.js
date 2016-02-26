@@ -87,6 +87,18 @@ function Supporters(options) {
     }
 
     /**
+     * The storage for the known supporters.
+     *
+     * This is our store. It is an ordered Array of plain objects.
+     *
+     * @member {Array} supporters
+     * @instance
+     * @memberof module:supporters/supporters~Supporters
+     * @todo maybe transform this into an (iterable) SupportersCollection
+     */
+    this.supporters = [];
+
+    /**
      * The bound HTMLElement.
      * @member {HTMLElement} el
      * @instance
@@ -132,6 +144,26 @@ Supporters.prototype.bindTo = function (el, doc) {
     } else {
         return false;
     }
+};
+
+/**
+ * Add (signer) objects to the store.
+ *
+ * Returns the count of supporters which have been added to the store.
+ *
+ * @method
+ * @param {Array} supporters - an array of signer objects
+ * @returns {number}
+ */
+Supporters.prototype.add = function (supporters) {
+    if (typeof supporters === 'undefined' || !Array.isArray(supporters)) {
+        return 0;
+    }
+
+    var oldCount = this.supporters.length;
+    this.supporters = this.supporters.concat(supporters);
+    var newCount = this.supporters.length;
+    return newCount - oldCount;
 };
 
 // vim: set et ts=4 sw=4 :

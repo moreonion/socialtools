@@ -96,6 +96,34 @@ describe('Supporters', function () {
             assert.equal(el, supporters.el);
         });
     });
+
+    describe('adding of supporters to store', function () {
+        beforeEach(function () {
+            this.supporters = new Supporters();
+        });
+
+        it('does not alter the store if given nothing or not an Array', function () {
+            assert.equal(0, this.supporters.supporters.length);
+
+            var returnValue = this.supporters.add();
+            assert.equal(0, returnValue);
+            assert.equal(0, this.supporters.supporters.length);
+
+            returnValue = this.supporters.add('not-an-array');
+            assert.equal(0, returnValue);
+            assert.equal(0, this.supporters.supporters.length);
+
+            returnValue = this.supporters.add({also: 'not-an-array'});
+            assert.equal(0, returnValue);
+            assert.equal(0, this.supporters.supporters.length);
+        });
+
+        it('returns the number of added supporters', function () {
+            var signer = {name: 'Signer'};
+            var returnValue = this.supporters.add([ signer ]);
+            assert.equal(1, returnValue);
+        });
+    });
 });
 
 // vim: set et ts=4 sw=4 :
