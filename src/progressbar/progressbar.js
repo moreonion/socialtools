@@ -211,23 +211,22 @@ Progressbar.prototype.render = function () {
             bar.style[this.settings.barStyleAttr] = this.percentageDone(true) + '%';
         }
 
-        var self = this;
-        var counters = this.el.querySelectorAll(this.settings.counterSelector);
-        counters.forEach(function (el) {
-            el.textContent = self.currentCount;
-        });
+        var i, counters = this.el.querySelectorAll(this.settings.counterSelector);
+        for (i = 0; i < counters.length; i++) {
+            counters[i].textContent = this.currentCount;
+        }
 
         var downCounters = this.el.querySelectorAll(this.settings.downCounterSelector);
         var missingCount = this.getMissingCount();
-        downCounters.forEach(function (el) {
-            el.textContent = missingCount;
-        });
+        for (i = 0; i < downCounters.length; i++) {
+            downCounters[i].textContent = missingCount;
+        }
 
         var targets = this.el.querySelectorAll(this.settings.targetSelector);
         var currentTarget = this.currentTarget();
-        targets.forEach(function (el) {
-            el.textContent = currentTarget;
-        });
+        for (i = 0; i < targets.length; i++) {
+            targets[i].textContent = currentTarget;
+        }
     }
 };
 
