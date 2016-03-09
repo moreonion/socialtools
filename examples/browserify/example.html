@@ -3,21 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <title>Browserify Example</title>
+  <style type="text/css" media="screen">
+    * {
+      box-sizing: border-box;
+    }
+    #progressbar {
+      background: #eee;
+      border: 1px solif #fef;
+      padding: 0.5em;
+      width: 100%;
+      max-width: 20em;
+    }
+    #progressbar .bar {
+      height: 2em;
+      width: 0%;
+      min-width: 2px;
+      background-color: #aad;
+      margin-bottom: 0.5em;
+    }
+    .counter,
+    .down-counter {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h1>Browserify Example</h1>
 
-  <div id="example"><div class="bar"></div></div>
+  <div id="progressbar">
+    <div class="bar"></div>
+    <div>
+      Already <span class="counter">0</span>.
+      Missing <span class="down-counter">100</span>.
+    </div>
+  </div>
+
+  <p></p>
+
+  <div>
+    You would start polling with <code>poller.poll('start')</code>.<br>
+    You can update the progressbar e.g. withh <code>progressbar.update(71)</code>.
+  </div>
 
   <script src="../../dist/socialtools-full-modern.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
-var poller = new Socialtools.Poller({
-  url: "http://api.example.com/endpoint/1",
-  handler: function (e) {
-    console.log(e);
-  }
-});
-poller.poll('start');
+    console.log(['utils', Socialtools.utils]);
+
+    poller = new Socialtools.Poller({
+      url: "http://api.example.com/endpoint/1",
+      handler: function (e) {
+        console.log(e);
+      }
+    });
+    console.log(['poller', poller]);
+
+    progressbar = new Socialtools.Progressbar({
+        el: '#progressbar',
+        targets: [ 100, 300, 1000, 10000 ],
+        poller: null
+    });
+    console.log(['progressbar', progressbar]);
+    progressbar.update(13);
+
+    // setting up an event listener
+    document.addEventListener('polled', function (e) {
+        console.log(e); // eslint-disable-line no-console
+    });
   </script>
 </body>
 </html>
