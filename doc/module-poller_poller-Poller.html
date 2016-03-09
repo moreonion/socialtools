@@ -288,6 +288,46 @@
 
         <tr>
             
+                <td class="name"><code>createEvent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">whether the poller should
+    create an event</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>handler</code></td>
             
 
@@ -367,7 +407,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line33">line 33</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -472,7 +512,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line60">line 60</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line65">line 65</a>
     </li></ul></dd>
     
 
@@ -544,7 +584,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line52">line 52</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -616,7 +656,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line42">line 42</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -747,7 +787,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line186">line 186</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line193">line 193</a>
     </li></ul></dd>
     
 
@@ -883,7 +923,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line219">line 219</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -1014,7 +1054,7 @@ the polled data provided as argument.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line76">line 76</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -1166,7 +1206,7 @@ This method conveniently wraps Poller#get with a call to
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line120">line 120</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -1318,7 +1358,7 @@ This method conveniently wraps Poller#get with a call to
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line138">line 138</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line142">line 142</a>
     </li></ul></dd>
     
 
@@ -1331,8 +1371,6 @@ This method conveniently wraps Poller#get with a call to
     <dd class="tag-todo">
         <ul>
             <li>possible to inject other document</li>
-        
-            <li>possible to inject other global scope (window)</li>
         
             <li>when to reject Promises</li>
         </ul>
@@ -1387,8 +1425,8 @@ This method conveniently wraps Poller#get with a call to
 <div class="description">
     Start and stop the poller.
 
-The action can be <code>start</code> (default), <code>stop</code> or
-<code>reset</code>.
+The action can be <code>once</code>, <code>start</code> (default),
+<code>stop</code> or <code>reset</code>.
 </div>
 
 
@@ -1501,7 +1539,7 @@ The action can be <code>start</code> (default), <code>stop</code> or
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line248">line 248</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line255">line 255</a>
     </li></ul></dd>
     
 
@@ -1699,7 +1737,7 @@ The action can be <code>start</code> (default), <code>stop</code> or
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line192">line 192</a>
+        <a href="poller_poller.js.html">poller/poller.js</a>, <a href="poller_poller.js.html#line200">line 200</a>
     </li></ul></dd>
     
 
@@ -1752,7 +1790,7 @@ The action can be <code>start</code> (default), <code>stop</code> or
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 18 2016 16:24:39 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Mar 09 2016 17:49:46 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
