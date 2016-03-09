@@ -628,6 +628,8 @@ if (typeof Poller === 'undefined') {
  *     to choose between <code>width</code> and <code>height</code>
  * @param {string} [options.counterSelector='.counter'] - the HTML class
  *     selector which selects counters
+ * @param {string} [options.targetSelector='.target'] - the HTML class
+ *     selector which selects elements that should display the current target
  * @param {string} [options.downCounterSelector='.down-counter'] - the HTML
  *     class selector which selects counters (the remaining count)
  * @todo <code>el</code> can be a collection
@@ -652,6 +654,7 @@ function Progressbar(options) {
         barStyleAttr: 'width',
         counterSelector: '.counter',
         downCounterSelector: '.down-counter',
+        targetSelector: '.target',
         el: null
     };
 
@@ -780,14 +783,21 @@ Progressbar.prototype.render = function () {
             bar.style[this.settings.barStyleAttr] = this.percentageDone(true) + '%';
         }
 
-        var counter = this.el.querySelector(this.settings.counterSelector);
-        if (counter) {
-            counter.textContent = this.currentCount;
+        var i, counters = this.el.querySelectorAll(this.settings.counterSelector);
+        for (i = 0; i < counters.length; i++) {
+            counters[i].textContent = this.currentCount;
         }
 
-        var downCounter = this.el.querySelector(this.settings.downCounterSelector);
-        if (downCounter) {
-            downCounter.textContent = this.getMissingCount();
+        var downCounters = this.el.querySelectorAll(this.settings.downCounterSelector);
+        var missingCount = this.getMissingCount();
+        for (i = 0; i < downCounters.length; i++) {
+            downCounters[i].textContent = missingCount;
+        }
+
+        var targets = this.el.querySelectorAll(this.settings.targetSelector);
+        var currentTarget = this.currentTarget();
+        for (i = 0; i < targets.length; i++) {
+            targets[i].textContent = currentTarget;
         }
     }
 };
