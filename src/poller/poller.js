@@ -22,7 +22,7 @@ var root = this; // eslint-disable-line consistent-this
  * @param {object} options - the options
  * @param {string} options.url - the URL to poll
  * @param {string} [options.type='json'] - the type of the request, may be
- *     <code>json</code> or <code>jsonp</code>
+ *     <code>plain</code>, <code>json</code> or <code>jsonp</code>
  * @param {number} [options.pollInterval=10000] - the time between polls in
  *     milliseconds
  * @param {function} [options.adapter=DefaultAdapterFn] - the function which
@@ -229,7 +229,9 @@ Poller.prototype._poll = function (url) {
     // transform via JSON.parse resolve callback
     var self = this;
     var pollCallbackName;
-    if (this.settings.type === 'json') {
+    if (this.settings.type === 'plain') {
+        pollCallbackName = 'get';
+    } else if (this.settings.type === 'json') {
         pollCallbackName = 'getJSON';
     } else if (this.settings.type === 'jsonp') {
         pollCallbackName = 'getJSONP';
